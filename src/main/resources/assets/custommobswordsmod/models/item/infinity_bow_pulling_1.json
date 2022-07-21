@@ -1,0 +1,6 @@
+{
+  "parent": "custommobswordsmod:item/infinity_bow",
+  "textures": {
+    "layer0": "custommobswordsmod:item/infinity_bow_pulling_1"
+  }
+}

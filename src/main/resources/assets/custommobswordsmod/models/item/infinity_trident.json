@@ -1,0 +1,6 @@
+{
+  "parent": "entity/generated",
+  "textures": {
+    "layer0": "entity/infinity_trident"
+  }
+}
