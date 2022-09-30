@@ -8,7 +8,8 @@ import net.vukrosic.custommobswordsmod.item.ModItems;
 public class ModModelPredicateProvider {
 
     public static void registerModModels(){
-        registerBow(ModItems.INFINITY_BOW);
+        //registerBow(ModItems.INFINITY_BOW);
+        registerShield(ModItems.ABSORPTION_SHIELD_ITEM);
     }
 
     private static void registerBow(Item bow) {
@@ -27,4 +28,12 @@ public class ModModelPredicateProvider {
                 (stack, world, entity, seed) -> entity != null && entity.isUsingItem()
                         && entity.getActiveItem() == stack ? 1.0f : 0.0f);
     }
+
+    private static void registerShield(Item shield) {
+        FabricModelPredicateProviderRegistry.register(shield, new Identifier("blocking"),
+                (stack, world, entity, seed) -> entity != null && entity.isUsingItem()
+                        && entity.getActiveItem() == stack ? 1.0f : 0.0f);
+    }
+
+
 }

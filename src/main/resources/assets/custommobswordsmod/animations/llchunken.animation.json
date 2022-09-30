@@ -1,0 +1,57 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.the_chunken.baby_transform": {
+			"loop": true,
+			"bones": {
+				"head": {
+					"scale": 2
+				}
+			}
+		},
+		"animation.the_chunken.general": {
+			"loop": true,
+			"bones": {
+				"wing0": {
+					"rotation": [0, 0, "variable.wing_flap - this"]
+				},
+				"wing1": {
+					"rotation": [0, 0, "-variable.wing_flap - this"]
+				}
+			}
+		},
+		"animation.the_chunken.move": {
+			"loop": true,
+			"anim_time_update": "query.modified_distance_moved",
+			"bones": {
+				"leg0": {
+					"rotation": ["math.cos(query.anim_time * 38.17) *  80.0", 0, 0]
+				},
+				"leg1": {
+					"rotation": ["math.cos(query.anim_time * 38.17) * -80.0", 0, 0]
+				}
+			}
+		},
+		"animation.the_chunken.eat": {
+			"animation_length": 1.25,
+			"bones": {
+				"head": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.375": [85, 0, 0],
+						"0.6667": [71.92, 0, 0],
+						"1.125": [0, 0, 0]
+					}
+				},
+				"break_upper": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.375": [0, 1, 0],
+						"0.7917": [0, 1, 0],
+						"1.25": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,4 +1,6 @@
 {
+  "item.custommobswordsmod.one_chop_shears": "One Chop Shears",
+  "item.custommobswordsmod.rabbit_boots": "Rabbit Boots",
   "item.custommobswordsmod.creeper_sword": "Infinity Sword",
   "item.custommobswordsmod.life_steal_sword": "Blooddrain",
   "item.custommobswordsmod.swap_sword": "Swap Sword",
@@ -12,6 +14,28 @@
   "item.custommobswordsmod.infinity_bow": "Infinity Bow",
   "item.custommobswordsmod.infinity_trident": "Infinity Trident",
   "item.custommobswordsmod.infinity_creeper_spawn_egg": "Infinity Creeper Spawn Egg",
-  "entity.custommobswordsmod.infinity_creeper": "Infinity Creeper"
+  "item.custommobswordsmod.fire_pearl": "Fire Pearl",
+  "item.custommobswordsmod.burnt_apple": "Burnt Apple",
+  "item.custommobswordsmod.fire_item": "Fire Item",
+  "item.custommobswordsmod.frog_king_item": "Frog King Item",
+  "item.custommobswordsmod.absorption_shield_item": "Absorption Shield Item",
 
+
+
+  "block.custommobswordsmod.item_combiner": "Item Combiner",
+
+  "entity.custommobswordsmod.fire_enderman": "Fire Enderman",
+  "entity.custommobswordsmod.fire_zombie": "Fire Zombie",
+  "entity.custommobswordsmod.ender_zoglin": "Ender Zoglin",
+  "entity.custommobswordsmod.big_frog": "Big Frog",
+  "entity.custommobswordsmod.infinity_block": "Infinity Block",
+  "entity.custommobswordsmod.chunken": "Chunken",
+  "entity.custommobswordsmod.frog_king": "Frog King",
+  "entity.custommobswordsmod.shielding_shulker": "Shielding Progress",
+
+  "effect.custommobswordsmod.carbonpoisoning": "Be quiet, she will hear you",
+  "effect.custommobswordsmod.chicken": "C H I C C",
+
+  "key.category.custommobswordsmod.custommobs": "Custom Mobs Keys",
+  "key.custommobswordsmod.shoot_tongue": "Shoot Tongue Key"
 }

@@ -1,21 +1,18 @@
 package net.vukrosic.custommobswordsmod;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.vukrosic.custommobswordsmod.block.ModBlocks;
+import net.vukrosic.custommobswordsmod.effect.ModEffects;
+import net.vukrosic.custommobswordsmod.entity.ModBlockEntities;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
-import net.vukrosic.custommobswordsmod.entity.custom.InfinityCreeperEntity;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.particle.ModParticles;
+import net.vukrosic.custommobswordsmod.screen.ModScreenHandlers;
 import net.vukrosic.custommobswordsmod.util.ModRegistries;
-import net.vukrosic.custommobswordsmod.villager.ModVillagers;
+import net.vukrosic.custommobswordsmod.world.dimension.ModDimensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.bernie.geckolib3.GeckoLib;
 
 public class CustomMobSwordsMod implements ModInitializer {
 	public static final String MOD_ID = "custommobswordsmod";
@@ -30,10 +27,16 @@ public class CustomMobSwordsMod implements ModInitializer {
 	public void onInitialize() {
 
 		ModItems.registerModItems();
+		ModBlocks.registerModBlocks();
 		ModEntities.registerModEntities();
-		ModVillagers.registerVillagers();
-		ModVillagers.registerTrades();
+		//ModVillagers.registerVillagers();
+		//ModVillagers.registerTrades();
 		ModRegistries.registerModStuffs();
+		ModBlockEntities.registerAllBlockEntities();
+		ModDimensions.register();
+        GeckoLib.initialize();
+		ModEffects.registerEffects();
 		ModParticles.registerParticles();
+		ModScreenHandlers.registerAllScreenHandlers();
 	}
 }

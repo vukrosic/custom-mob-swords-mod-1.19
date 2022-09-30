@@ -1,68 +1,70 @@
 package net.vukrosic.custommobswordsmod.item;
 
+import com.github.crimsondawn45.fabricshieldlib.lib.object.FabricShieldItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.item.ToolMaterials;
+import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
-import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.item.custom.*;
 
 
 public class ModItems {
 
-    public static final Item INFINITY_CREEPER_SPAWN_EGG = registerItem("infinity_creeper_spawn_egg",
-            new SpawnEggItem(ModEntities.INFINITY_CREEPER, 0x948e8d, 0x3b3635,
-                    new FabricItemSettings().group(ItemGroup.MISC)));
+    public static final Item ABSORPTION_SHIELD_ITEM = registerItem("absorption_shield_item",
+            new AbsorptionShieldItem(new FabricItemSettings().group(ItemGroup.COMBAT).maxDamage(3360), 10, 13, Items.IRON_INGOT));
 
-    public static final Item INFINITY_TRIDENT = registerItem("infinity_trident",
-            new InfinityTridentItem(new FabricItemSettings().group(ItemGroup.COMBAT)));
+    /*
+    public static final Item ABSORPTION_SHIELD_ITEM2 = registerItem("absorption2_shield_item",
+            new AbsorptionShieldItem(new FabricItemSettings().group(ItemGroup.COMBAT).maxDamage(336)));*/
 
-    public static final Item INFINITY_ARROW = registerItem("infinity_arrow",
-            new InfinityArrowItem(new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item FROG_KING_ITEM = registerItem("frog_king_item",
+            new FrogKingItem(new FabricItemSettings().group(ItemGroup.MISC)));
 
-    public static final Item INFINITY_BOW = registerItem("infinity_bow",
-            new InfinityBowItem(new FabricItemSettings().group(ItemGroup.COMBAT)));
-
-    public static final Item DOUBLING_PICKAXE = registerItem("doubling_pickaxe",
-            new DoublingPickaxeItem(ToolMaterials.DIAMOND, 5, 1, new FabricItemSettings().group(ItemGroup.TOOLS)));
-
+    public static final Item FIRE_ITEM = registerItem("fire_item",
+            new Item(new FabricItemSettings().group(ItemGroup.MISC)));
+    public static final Item FIRE_PEARL = registerItem("fire_pearl",
+            new FirePearlItem(new FabricItemSettings().group(ItemGroup.MISC)));
 
 
-    /*=======
-     Swords
-     =======*/
+    public static final Item BURNT_APPLE = registerItem("burnt_apple",
+            new BurntFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_APPLE)));
 
-    public static final Item CREEPER_SWORD = registerItem("creeper_sword",
-            new CreeperSwordItem(ToolMaterials.DIAMOND, 5, 1, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_BEEF = registerItem("burnt_beef",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_BEEF)));
 
-    public static final Item LIFE_STEAL_SWORD = registerItem("life_steal_sword",
-            new LifeStealSwordItem(ToolMaterials.DIAMOND, 4, 1, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_BREAD = registerItem("burnt_bread",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_BREAD)));
 
-    public static final Item SWAP_SWORD = registerItem("swap_sword",
-            new SwapSwordItem(ToolMaterials.DIAMOND, 3, 1, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_CARROT = registerItem("burnt_carrot",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_CARROT)));
 
-    public static final Item PULL_SWORD = registerItem("pull_sword",
-            new PullSwordItem(ToolMaterials.DIAMOND, 3, 1, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_CHICKEN = registerItem("burnt_chicken",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_CHICKEN)));
 
-    public static final Item BACKSTAB_SWORD = registerItem("backstab_sword",
-            new BackstabSwordItem(ToolMaterials.DIAMOND, 5, 2f, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_COD = registerItem("burnt_cod",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_COD)));
 
-    public static final Item PAPER_SWORD = registerItem("paper_sword",
-            new PaperSwordItem(ToolMaterials.DIAMOND, 0, 2f, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_GOLDEN_APPLE = registerItem("burnt_golden_apple",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_GOLDEN_APPLE)));
 
-    public static final Item CURSED_SWORD = registerItem("cursed_sword",
-            new CursedSwordItem(ToolMaterials.DIAMOND, 10, 2f, new FabricItemSettings().group(ItemGroup.COMBAT)));
-    public static final Item UNDYING_SWORD = registerItem("undying_sword",
-            new UndyingSwordItem(ToolMaterials.DIAMOND, 8, 2f, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_MUTTON = registerItem("burnt_mutton",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_MUTTON)));
 
-    public static final Item VILLAGER_SWORD = registerItem("villager_sword",
-            new VillagerSwordItem(ToolMaterials.DIAMOND, 1, 2f, new FabricItemSettings().group(ItemGroup.COMBAT)));
+    public static final Item BURNT_MELON = registerItem("burnt_melon",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_MELON)));
 
+    public static final Item BURNT_PORKCHOP = registerItem("burnt_porkchop",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_PORKCHOP)));
 
+    public static final Item BURNT_POTATO = registerItem("burnt_potato",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_POTATO)));
+
+    public static final Item BURNT_RABBIT = registerItem("burnt_rabbit",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_RABBIT)));
+
+    public static final Item BURNT_SALMON = registerItem("burnt_salmon",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_SALMON)));
 
 
     private static Item registerItem(String name, Item item) {

@@ -1,0 +1,14 @@
+{
+    "parent":"fabricshieldlib:item/fabric_shield",
+    "textures":{
+        "shield":"custommobswordsmod:item/absorption_shield_item"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "blocking": 1
+            },
+            "model": "custommobswordsmod:item/absorption_shield_item_blocking"
+        }
+    ]
+}

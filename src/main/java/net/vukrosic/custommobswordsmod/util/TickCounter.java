@@ -1,12 +1,6 @@
 package net.vukrosic.custommobswordsmod.util;
 
 
-import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.util.math.Box;
-import net.vukrosic.custommobswordsmod.item.custom.DoublingPickaxeItem;
-import net.vukrosic.custommobswordsmod.item.custom.InfinityBowItem;
-import net.vukrosic.custommobswordsmod.item.custom.SwapSwordItem;
-
 public class TickCounter {
     //MinecraftClient client = MinecraftClient.getInstance().world.getTime()
 
@@ -24,6 +18,10 @@ public class TickCounter {
 
 
     public static void calledEveryTick() {
+        FireInfectedPlayers.tick();
+        CarbonPoisoningEffectManager.tick();
+
+
 /*
         // Stopwatch
         if(!Stopwatch.timePaused){
@@ -32,7 +30,7 @@ public class TickCounter {
 */
 
         // CutdownTreesCommand breaking blocks every tick
-
+/*
         if(tickCounter % 10 == 0) {
             if (DoublingPickaxeItem.breaking && DoublingPickaxeItem.radius < 10) {
                 DoublingPickaxeItem.radius += 1;
@@ -43,7 +41,7 @@ public class TickCounter {
                 DoublingPickaxeItem.radius += 2;
                 DoublingPickaxeItem.breaking = false;
             }
-        }
+        }*/
 
 
 

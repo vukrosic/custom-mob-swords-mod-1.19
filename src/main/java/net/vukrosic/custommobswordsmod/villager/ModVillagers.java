@@ -19,7 +19,7 @@ import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 
 public class ModVillagers {
-
+/*
     public static final PointOfInterestType INFINITY_POI = registerPOI("infinity_poi", Blocks.OAK_LOG);
 
     public static final VillagerProfession INFINITY_VILLAGER = registerProfession("infinity_villager",
@@ -51,6 +51,6 @@ public class ModVillagers {
                     )));
                 });
     }
-
+*/
 
 }

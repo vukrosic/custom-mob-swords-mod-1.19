@@ -3,7 +3,7 @@
   "id": "custom-mob-swords-mod",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "Custom Mobs",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
     "Vuk Rosić"
@@ -30,7 +30,7 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.14.6",
+    "fabricloader": ">=0.14.9",
     "fabric": "*",
     "minecraft": "~1.19",
     "java": ">=17"
