@@ -5,12 +5,13 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
-import net.vukrosic.custommobswordsmod.effect.custom.CarbonPoisoningEffect;
-import net.vukrosic.custommobswordsmod.effect.custom.ChickenEffect;
-import net.vukrosic.custommobswordsmod.effect.custom.FrogKingPoisonEffect;
-import net.vukrosic.custommobswordsmod.effect.custom.ShieldOfAbsorbtionEffect;
+import net.vukrosic.custommobswordsmod.effect.custom.*;
 
 public class ModEffects {
+
+
+    public static StatusEffect SPONTANEOUSCOMBUSTION = Registry.register(Registry.STATUS_EFFECT, new Identifier(CustomMobSwordsMod.MOD_ID, "spontaneouscombustion"),
+            new SpontaneousCompustionEffect(StatusEffectCategory.HARMFUL, 6644887));
 
     public static StatusEffect CHICKEN;
     /*= Registry.register(Registry.STATUS_EFFECT, new Identifier(CustomMobSwordsMod.MOD_ID, "chicken"),

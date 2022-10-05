@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.event.GameEvent;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.BlinkingWardenEntity;
 import org.jetbrains.annotations.Nullable;
@@ -47,18 +48,34 @@ public class CarbonPoisoningEffect extends StatusEffect {
         if(entity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) entity;
             int duration = 50;
-            wardenTimer = 10;
+            wardenTimer = 9;
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, duration, 0, false, true, false));
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, duration, 0, false, true, false));
             // on player status effect end, remove warden
 
 
             for (int i = 0; i < 16; i++) {
-                // make a random number between -10 and 10
-                int x = (int) (Math.random() * 20 - 10);
-                int z = (int) (Math.random() * 20 - 10);
-                if(x > 4 && z > 4) {
-                    spawnAt(player, player.getX() + x, player.getY(), player.getZ() + z);
+                /*
+                int x = (int) (Math.random() * 15) + 15;
+                int z = (int) (Math.random() * 15) + 15;
+
+                if(Math.random() <= 0.25f){
+                    teleportTo(player, player.getX() - x, player.getY(), player.getZ() + z);
+                } else if (Math.random() <= 0.5f) {
+                    teleportTo(player, player.getX() + x, player.getY(), player.getZ() + z);
+                } else if (Math.random() <= 0.75f) {
+                    teleportTo(player, player.getX() - x, player.getY(), player.getZ() - z);
+                } else {
+                    teleportTo(player, player.getX() + x, player.getY(), player.getZ() - z);
+                }*/
+
+
+                int x = (int) (Math.random() * 20) - 10;
+                int z = (int) (Math.random() * 20) - 10;
+                player.sendMessage(Text.of("generated x: " + x + " z: " + z), false);
+                //spawnAt(player, player.getX() + x, player.getY(), player.getZ() + z);
+                if((x > 4 || x < -4) && (z > 4 || z < -4)) {
+                    teleportTo(player, player.getX() + x, player.getY(), player.getZ() + z);
                 }
 
 
@@ -73,7 +90,6 @@ public class CarbonPoisoningEffect extends StatusEffect {
             if(entity instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) entity;
                 if (player.hasStatusEffect(StatusEffects.DARKNESS)) {
-                    player.sendMessage(Text.of("duration = " + wardenTimer), false);
                     wardenTimer--;
                     if (wardenTimer <= 5) {
                         for (BlinkingWardenEntity warden : blinkingWardenEntities) {
@@ -138,6 +154,7 @@ public class CarbonPoisoningEffect extends StatusEffect {
     }
 
     public boolean spawnWardenAt(double x, double y, double z, boolean particleEffects, PlayerEntity player) {
+        player.sendMessage(Text.of("spawn warden " + x), false);
         BlinkingWardenEntity warden = new BlinkingWardenEntity(ModEntities.BLINKING_WARDEN, player.world);
         warden.refreshPositionAndAngles(x, y, z, 0, 0);
         warden.setPosition(x, y, z);
@@ -145,4 +162,40 @@ public class CarbonPoisoningEffect extends StatusEffect {
         blinkingWardenEntities.add(warden);
         return true;
     }
+
+
+    private boolean teleportTo(PlayerEntity player, double x, double y, double z) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
+
+        while(mutable.getY() > player.world.getBottomY() && !player.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+            mutable.move(Direction.DOWN);
+        }
+        // get y coordinate of top of the ground
+        // player.world.getBlockState(mutable).getCollisionShape(player.world, mutable).getBoundingBox().getMax(Direction.Axis.Y);
+        // the previous line will
+
+        BlockState blockState = player.world.getBlockState(mutable);
+        boolean bl = blockState.getMaterial().blocksMovement();
+        boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
+        if (bl && !bl2) {
+            Vec3d vec3d = player.getPos();
+            // get position of top of the ground
+            double d = (double)mutable.getY() + 0.5D;
+            boolean bl3 = this.spawnWardenAt(x, d, z, true, player);
+            if (bl3) {
+                player.world.emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(player));
+                if (!player.isSilent()) {
+                    player.world.playSound((PlayerEntity)null, player.prevX, player.prevY, player.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, player.getSoundCategory(), 1.0F, 1.0F);
+                    player.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                }
+            }
+
+            return bl3;
+        } else {
+            return false;
+        }
+    }
+
+
+
 }

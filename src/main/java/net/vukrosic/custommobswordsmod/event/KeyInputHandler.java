@@ -35,7 +35,9 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
+import net.vukrosic.custommobswordsmod.entity.custom.ShieldingShulkerEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.screen.BlackScreen;
 import net.vukrosic.custommobswordsmod.screen.BlackScreenHandler;
@@ -45,9 +47,11 @@ public class KeyInputHandler {
     public static final String KEY_CATEGORY_CUSTOMMOBS = "key.category.custommobswordsmod.custommobs";
     public static final String KEY_SHOOT_TONGUE = "key.custommobswordsmod.shoot_tongue";
     public static final String KEY_SHOOT_BEAM = "key.custommobswordsmod.shoot_beam";
+    public static final String KEY_SUMMON_SHULKER = "key.custommobswordsmod.summon_shulker";
 
     public static KeyBinding shootTongue;
     public static KeyBinding shootBeam;
+    public static KeyBinding summonShulker;
 
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -91,6 +95,13 @@ public class KeyInputHandler {
             if(shootBeam.wasPressed()){
                 client.setScreen(new BlackScreen(new BlackScreenHandler(0, client.player.getInventory()), client.player.getInventory(), Text.of("")));
             }
+
+            if (summonShulker.wasPressed()) {
+                if(SetHunterCommand.pray != null){
+                    ((PlayerEntityExt)SetHunterCommand.pray).SummonShieldingShulker();
+                }
+
+            }
         });
     }
 
@@ -111,6 +122,13 @@ public class KeyInputHandler {
                     KEY_SHOOT_BEAM,
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_H,
+                    KEY_CATEGORY_CUSTOMMOBS
+            ));
+
+            summonShulker = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    KEY_SUMMON_SHULKER,
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_P,
                     KEY_CATEGORY_CUSTOMMOBS
             ));
 

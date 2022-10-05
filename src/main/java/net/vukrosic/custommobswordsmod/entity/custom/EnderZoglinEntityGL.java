@@ -69,7 +69,7 @@ public class EnderZoglinEntityGL extends ZombifiedPiglinEntity implements IAnima
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         if (event.isMoving()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.enderzogolin.run", true));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.enderzoglin.walk", true));
             return PlayState.CONTINUE;
         }
         /*
@@ -77,7 +77,7 @@ public class EnderZoglinEntityGL extends ZombifiedPiglinEntity implements IAnima
             event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.the_chunken.eat", false));
         }*/
 
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.enderzogolin.idle", true));
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.enderzoglin.idle", true));
         return PlayState.CONTINUE;
 
 
@@ -87,7 +87,7 @@ public class EnderZoglinEntityGL extends ZombifiedPiglinEntity implements IAnima
     private PlayState attackPredicate(AnimationEvent event) {
         if(this.handSwinging && event.getController().getAnimationState().equals(AnimationState.Stopped)) {
             event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.enderzogolin.run", false));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.enderzoglin.attack", false));
             this.handSwinging = false;
         }
 
@@ -120,7 +120,6 @@ public class EnderZoglinEntityGL extends ZombifiedPiglinEntity implements IAnima
     @Override
     public void tick() {
         double randomNumber = Math.random();
-        System.out.println(super.getTarget());
         if(super.getTarget() != null) {
             if (randomNumber > 0.80) {
                 // if distance to target is greater than 10, teleport to target
@@ -129,12 +128,14 @@ public class EnderZoglinEntityGL extends ZombifiedPiglinEntity implements IAnima
                 }
             }
 
-            if (randomNumber > 0.6) {
+            /*if (randomNumber > 0.6) {*/
                 // break a random block in a 10 block radius
                 int breakBlockRadius = 6;
                 BlockPos pos = new BlockPos(world.getRandom().nextInt(breakBlockRadius), world.getRandom().nextInt(breakBlockRadius), world.getRandom().nextInt(breakBlockRadius));
                 world.breakBlock(new BlockPos(super.getTarget().getX() + pos.getX() - breakBlockRadius/2, super.getTarget().getY() - pos.getY(), super.getTarget().getZ() + pos.getZ() - breakBlockRadius/2), false);
-            }
+                BlockPos pos1 = new BlockPos(world.getRandom().nextInt(breakBlockRadius), world.getRandom().nextInt(breakBlockRadius), world.getRandom().nextInt(breakBlockRadius));
+                world.breakBlock(new BlockPos(super.getTarget().getX() + pos1.getX() - breakBlockRadius/2, super.getTarget().getY() - pos1.getY(), super.getTarget().getZ() + pos1.getZ() - breakBlockRadius/2), false);
+            //}
         }
 
         super.tick();

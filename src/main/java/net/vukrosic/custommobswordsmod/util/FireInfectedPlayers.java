@@ -60,6 +60,9 @@ public class FireInfectedPlayers {
                 ItemStack itemStack = player.getInventory().getStack(i);
                 if(itemStack.isDamageable()){
                     if(itemStack.getItem() instanceof ToolItem) {
+                        if(((ToolItem) itemStack.getItem()).getMaterial() == ToolMaterials.GOLD) {
+                            player.getInventory().removeStack(i);
+                        }
                         itemStack.setDamage(itemStack.getDamage() + itemStack.getMaxDamage() / maxFireTicks);
                     }
                 }
@@ -99,6 +102,12 @@ public class FireInfectedPlayers {
                 player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_GOLDEN_APPLE, stack.getCount()));
             } else if (Items.MELON.equals(stack.getItem())) {
                 player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_MELON, stack.getCount()));
+            } else if (Items.MUSHROOM_STEW.equals(stack.getItem())) {
+                player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_STEW, stack.getCount()));
+            } else if (Items.SUSPICIOUS_STEW.equals(stack.getItem())) {
+                player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_STEW, stack.getCount()));
+            } else if (Items.RABBIT_STEW.equals(stack.getItem())) {
+                player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_STEW, stack.getCount()));
             } else {
                 player.getInventory().removeStack(i);
                 //player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_GOLDEN_APPLE, stack.getCount()));

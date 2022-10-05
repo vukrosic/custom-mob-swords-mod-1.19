@@ -16,8 +16,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
+import net.vukrosic.custommobswordsmod.entity.ModEntities;
+import net.vukrosic.custommobswordsmod.entity.client.chunken.ChunkenEntityModelGL;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -30,19 +35,24 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
+    //int phase = 1;
+    int hitsPerPhase = 4;
+    int hitsToNextPhase = hitsPerPhase;
     private AnimationFactory factory = new AnimationFactory(this);
-    int playerEatingTimer = 0;
 
-    float attackYaw, attackPitch = 0;
+    boolean hunterEaten = false;
 
-    int scale = 0;
-    boolean growing = false;
+
+
 
     private static final TrackedData<Boolean> ATTACKING =
             DataTracker.registerData(ChunkenEntityGL.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    public ChunkenEntityGL(EntityType<? extends HostileEntity> entityType, World world) {
+    public ChunkenEntityGL(
+        EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+        ChunkenPhaseManager.resetChunkenPhase();
+        hunterEaten = false;
     }
 
 
@@ -60,7 +70,6 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
 
 
-        playerEatingTimer = 50;
         /*
 
         MinecraftClient.getInstance().openScreen(new Screen(null) {
@@ -72,6 +81,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
         // DrawableHelper.drawTexture(new MatrixStack(), 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
+
 
 
 
@@ -107,37 +117,38 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
     }
 
 
+
     @Override
     public boolean damage(DamageSource source, float amount) {
         // if attacked by a player
 
-        // check if on cliient
-        if(!world.isClient() && scale < 10) {
 
+        if(world.getPlayers() != null)
+            world.getPlayers().get(0).sendMessage(Text.of("chunkenPhase = " + ChunkenPhaseManager.chunkenPhase), false);
 
+        if(!world.isClient() && ChunkenPhaseManager.chunkenPhase < 5) {
             if (source.getAttacker() instanceof PlayerEntity n) {
-                growing = true;
+                world.getPlayers().get(0).sendMessage(Text.of("chunkenPhase = " + ChunkenPhaseManager.chunkenPhase), false);
                 PlayerEntity attacker = (PlayerEntity) source.getAttacker();
-
                 MinecraftServer server = source.getSource().getServer();
-
                 CommandManager commandManager = server.getPlayerManager().getServer().getCommandManager();
-
-
-                commandManager.executeWithPrefix(attacker.getCommandSource(), "/scale add 0.3 @e[type=custommobswordsmod:chunkengl]");
-                scale++;
+                commandManager.executeWithPrefix(attacker.getCommandSource(), "/scale add 0.1 @e[type=custommobswordsmod:chunkengl]");
+                hitsToNextPhase--;
+                if(hitsToNextPhase == 0 && ChunkenPhaseManager.chunkenPhase < 4) {
+                    ChunkenPhaseManager.chunkenPhase++;
+                    hitsToNextPhase = hitsPerPhase;
+                    world.getPlayers().get(0).sendMessage(Text.of("going to the next phase = " + ChunkenPhaseManager.chunkenPhase), false);
+                }
             }
         }
-
         return super.damage(source, amount);
-
     }
 
 
 
     public static DefaultAttributeContainer.Builder setAttributes() {
         return HostileEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 2000.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0f)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 2.0f)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25f);
@@ -150,7 +161,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         if (event.isMoving()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.chick.move", true));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getWalkAnimation(), true));
             return PlayState.CONTINUE;
         }
         /*
@@ -158,31 +169,33 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.the_chunken.eat", false));
         }*/
 
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.chick.general", true));
+        event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getIdleAnimation(), true));
         return PlayState.CONTINUE;
 
 
     }
 
 
-    @Override
-    public void tickMovement() {
-        if (!this.world.isClient) {
-            if(this.isAttacking()) {
-                this.setVelocity(0, 0, 0);
-            }
-        }
-        super.tickMovement();
-    }
 
     private PlayState attackPredicate(AnimationEvent event) {
         if(this.handSwinging && event.getController().getAnimationState().equals(AnimationState.Stopped)) {
             event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.chick.attack", false));
+            if(ChunkenPhaseManager.chunkenPhase < 4) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getAttackAnimation(), false));
+            }
+            else {
+                if(!hunterEaten){
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.chicken.phase5_skills_attack", false));
+                    hunterEaten = true;
+                }
+                else{
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.chicken.phase5_skills_attack", false));
+                }
+
+            }
+
+
             this.handSwinging = false;
-            attackYaw = this.getYaw();
-            attackPitch = this.getPitch();
-            this.setRotation(attackYaw, attackPitch);
         }
 
         return PlayState.CONTINUE;
@@ -200,7 +213,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.2D, false));
+        this.goalSelector.add(2, new MeleeAttackGoal(this, 2.2D, false));
         this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.75f, 1));
         this.goalSelector.add(4, new LookAroundGoal(this));
 
@@ -232,21 +245,4 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15f, 1.0f);
     }
-
-/*
-    @Override
-    public void setAttacking(boolean attacking) {
-        this.dataTracker.set(ATTACKING, attacking);
-    }
-
-    @Override
-    public boolean isAttacking() {
-        return this.dataTracker.get(ATTACKING);
-    }
-
-    @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(ATTACKING, false);
-    }*/
 }

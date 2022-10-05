@@ -24,7 +24,7 @@ public class CarbonPoisoningEffectManager {
 
     static int emptyWardensCounter = 0;
 
-    static int maxticksLeft = 1000;
+    public static int maxticksLeft = 1000;
 
     public static void addPlayer(PlayerEntity player) {
         if(!players.contains(player)) {

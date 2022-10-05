@@ -9,16 +9,16 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class EnderZoglinEntityModelGL extends AnimatedGeoModel<EnderZoglinEntityGL> {
     @Override
     public Identifier getModelResource(EnderZoglinEntityGL object) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "geo/enderzoglin.geo.json");
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "geo/ender_zoglin_faces.geo.json");
     }
 
     @Override
     public Identifier getTextureResource(EnderZoglinEntityGL object) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/enderzoglin.png");
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/ender_zoglin.png");
     }
 
     @Override
     public Identifier getAnimationResource(EnderZoglinEntityGL animatable) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "animations/enderzoglin.animation.json");
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "animations/ender_zoglin.animation.json");
     }
 }

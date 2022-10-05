@@ -104,11 +104,7 @@ public class FireZombieEntity extends ZombieEntity {
 
                 //System.out.println("FireZombieEntity = " + ((PlayerEntityExt) livingEntity).fireInfected);
 
-                ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY() + 4, this.getZ(), Items.ACACIA_BOAT.getDefaultStack());
-                //spawn itemEntity
-                this.world.spawnEntity(itemEntity);
-                itemEntity.setOnFireFor(5);
-                System.out.println("New item entity created");
+
 
             }
             this.setOnFireFor(9999);

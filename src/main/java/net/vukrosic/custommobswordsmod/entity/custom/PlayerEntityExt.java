@@ -8,6 +8,9 @@ public interface PlayerEntityExt {
     ShieldingShulkerEntity shieldingShulkerEntity = null;
 
     void setShieldingShulkerEntity(ShieldingShulkerEntity shieldingShulkerEntity);
+    ShieldingShulkerEntity getShieldingShulkerEntity();
+
+    void SummonShieldingShulker();
 
     void setFrogKingEntity(FrogKingEntity frogKingEntity);
     FrogKingEntity getFrogKingEntity();

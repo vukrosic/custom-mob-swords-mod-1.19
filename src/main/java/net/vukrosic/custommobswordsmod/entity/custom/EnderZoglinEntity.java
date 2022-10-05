@@ -62,7 +62,6 @@ public class EnderZoglinEntity extends ZombifiedPiglinEntity {
     @Override
     public void tick() {
         double randomNumber = Math.random();
-        System.out.println(super.getTarget());
         if(super.getTarget() != null) {
             if (randomNumber > 0.80) {
                 // if distance to target is greater than 10, teleport to target

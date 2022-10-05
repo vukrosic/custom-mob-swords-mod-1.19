@@ -6,6 +6,7 @@ import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.ModBlockEntities;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.item.ModItems;
+import net.vukrosic.custommobswordsmod.painting.ModPaintings;
 import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import net.vukrosic.custommobswordsmod.screen.ModScreenHandlers;
 import net.vukrosic.custommobswordsmod.util.ModRegistries;
@@ -38,5 +39,6 @@ public class CustomMobSwordsMod implements ModInitializer {
 		ModEffects.registerEffects();
 		ModParticles.registerParticles();
 		ModScreenHandlers.registerAllScreenHandlers();
+		ModPaintings.registerPaintings();
 	}
 }

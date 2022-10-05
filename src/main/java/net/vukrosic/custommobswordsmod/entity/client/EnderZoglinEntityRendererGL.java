@@ -21,7 +21,7 @@ public class EnderZoglinEntityRendererGL extends GeoEntityRenderer<EnderZoglinEn
 
     @Override
     public Identifier getTextureResource(EnderZoglinEntityGL instance) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/enderzoglin.png");
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/ender_zoglin.png");
 
     }
 

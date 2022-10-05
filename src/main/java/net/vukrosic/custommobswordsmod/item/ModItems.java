@@ -11,12 +11,18 @@ import net.vukrosic.custommobswordsmod.item.custom.*;
 
 public class ModItems {
 
+    public static final Item FIRE_ZOMBIE_FLINT_AND_STEEL = registerItem("fire_zombie_flint_and_steel",
+            new FireZombieFlintAndSteel(new FabricItemSettings().group(ItemGroup.MISC)));
+
     public static final Item ABSORPTION_SHIELD_ITEM = registerItem("absorption_shield_item",
             new AbsorptionShieldItem(new FabricItemSettings().group(ItemGroup.COMBAT).maxDamage(3360), 10, 13, Items.IRON_INGOT));
 
     /*
     public static final Item ABSORPTION_SHIELD_ITEM2 = registerItem("absorption2_shield_item",
             new AbsorptionShieldItem(new FabricItemSettings().group(ItemGroup.COMBAT).maxDamage(336)));*/
+
+    public static final Item HUNTER_EGG_ITEM = registerItem("hunter_egg_item",
+            new HunterEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
 
     public static final Item FROG_KING_ITEM = registerItem("frog_king_item",
             new FrogKingItem(new FabricItemSettings().group(ItemGroup.MISC)));
@@ -28,7 +34,7 @@ public class ModItems {
 
 
     public static final Item BURNT_APPLE = registerItem("burnt_apple",
-            new BurntFoodItem(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_APPLE)));
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_APPLE)));
 
     public static final Item BURNT_BEEF = registerItem("burnt_beef",
             new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_BEEF)));
@@ -65,6 +71,9 @@ public class ModItems {
 
     public static final Item BURNT_SALMON = registerItem("burnt_salmon",
             new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_SALMON)));
+
+    public static final Item BURNT_STEW = registerItem("burnt_stew",
+            new Item(new FabricItemSettings().group(ItemGroup.FOOD).food(ModFoodComponents.BURNT_STEW)));
 
 
     private static Item registerItem(String name, Item item) {

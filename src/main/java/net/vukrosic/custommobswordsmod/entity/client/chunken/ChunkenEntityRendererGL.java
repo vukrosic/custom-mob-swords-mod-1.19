@@ -9,19 +9,23 @@ import net.minecraft.util.Identifier;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 import net.vukrosic.custommobswordsmod.entity.custom.ChunkenEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 public class ChunkenEntityRendererGL extends GeoEntityRenderer<ChunkenEntityGL> {
 
+    ChunkenEntityModelGL chunkenEntityModelGL = new ChunkenEntityModelGL();
     public ChunkenEntityRendererGL(EntityRendererFactory.Context ctx) {
         super(ctx, new ChunkenEntityModelGL());
         this.shadowRadius = .8f;
+
+        ChunkenPhaseManager.createChunkenPhases();
     }
 
     @Override
     public Identifier getTextureResource(ChunkenEntityGL instance) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/the_chunken.png");
-
+        return ChunkenPhaseManager.getChunkenTexture();
+        // return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png");
     }
 
     @Override

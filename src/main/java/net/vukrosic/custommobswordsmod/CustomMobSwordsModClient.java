@@ -6,9 +6,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.ShulkerEntityRenderer;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.client.*;
+import net.vukrosic.custommobswordsmod.entity.client.chunken.ChunkenEntityRangedRendererGL;
 import net.vukrosic.custommobswordsmod.entity.client.chunken.ChunkenEntityRendererGL;
 import net.vukrosic.custommobswordsmod.entity.client.corruptedallay.CorruptedAllayAllayEntityRenderer;
 import net.vukrosic.custommobswordsmod.entity.client.corruptedallay.CorruptedAllayVexEntityRenderer;
+import net.vukrosic.custommobswordsmod.entity.client.fireenderman.FireEndermanEntityRenderer;
 import net.vukrosic.custommobswordsmod.entity.client.frogking.FrogKingTongueEntityRenderer;
 import net.vukrosic.custommobswordsmod.entity.client.frogking.FrogKingTongueProjectileEntityRenderer;
 import net.vukrosic.custommobswordsmod.event.KeyInputHandler;
@@ -23,10 +25,11 @@ public class CustomMobSwordsModClient implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.register(ModEntities.FIRE_ENDERMAN, FireEndermanEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.FIRE_ZOMBIE, FireZombieEntityRenderer::new);
-        EntityRendererRegistry.register(ModEntities.ENDER_ZOGLIN, EnderZoglinEntityRenderer::new);
+        EntityRendererRegistry.register(ModEntities.ENDERZOGLIN, EnderZoglinEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.CHUNKEN, ChunkenEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.CHUNKENGL, ChunkenEntityRendererGL::new);
-        EntityRendererRegistry.register(ModEntities.ENDERZOGLINGL, EnderZoglinEntityRendererGL::new);
+        EntityRendererRegistry.register(ModEntities.CHUNKENRANGEDGL, ChunkenEntityRangedRendererGL::new);
+        EntityRendererRegistry.register(ModEntities.ENDER_ZOGLIN, EnderZoglinEntityRendererGL::new);
         EntityRendererRegistry.register(ModEntities.FROG_KING, FrogKingEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.FROG_KING_TONGUE, FrogKingTongueEntityRenderer::new);
         EntityRendererRegistry.register(ModEntities.FROG_KING_TONGUE_PROJECTILE, FrogKingTongueProjectileEntityRenderer::new);
@@ -36,6 +39,7 @@ public class CustomMobSwordsModClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.SHIELDING_SHULKER, ShulkerEntityRenderer::new);
 
         ParticleFactoryRegistry.getInstance().register(ModParticles.CHICKEN_PARTICLE, ChickenParticle.Factory::new);
+        //ParticleFactoryRegistry.getInstance().register(ModParticles.ROBOT_CHICKEN_PARTICLE, RobotChickenParticle.Factory::new);
 
         KeyInputHandler.register();
         ModModelPredicateProvider.registerModModels();

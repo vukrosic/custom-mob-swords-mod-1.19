@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.entity.custom;
+package net.vukrosic.custommobswordsmod.entity.custom.fireenderman;
 
 import net.minecraft.client.render.entity.EndermanEntityRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;

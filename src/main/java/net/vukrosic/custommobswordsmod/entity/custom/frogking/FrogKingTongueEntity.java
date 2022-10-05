@@ -3,11 +3,8 @@ package net.vukrosic.custommobswordsmod.entity.custom.frogking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.vukrosic.custommobswordsmod.entity.ModEntities;
-import net.vukrosic.custommobswordsmod.entity.custom.FireEndermanEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class FrogKingTongueEntity extends EndCrystalEntity {

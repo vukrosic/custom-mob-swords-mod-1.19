@@ -10,8 +10,10 @@ import net.minecraft.util.registry.Registry;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 import net.vukrosic.custommobswordsmod.entity.custom.*;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenEntityRangedGL;
 import net.vukrosic.custommobswordsmod.entity.custom.corruptedallay.CorruptedAllayAllayEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.corruptedallay.CorruptedAllayVexEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueProjectileEntity;
@@ -25,11 +27,18 @@ public class ModEntities {
                     .dimensions(EntityDimensions.fixed(1, 1))
                     .build());
 
+    public static final EntityType<ChunkenEntityRangedGL> CHUNKENRANGEDGL = Registry.register(
+            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "chunkenrangedgl"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ChunkenEntityRangedGL::new)
+                    // give it chicken dimensions
+                    .dimensions(EntityDimensions.fixed(3F, 3F))
+                    .build());
+
     public static final EntityType<ChunkenEntityGL> CHUNKENGL = Registry.register(
             Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "chunkengl"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ChunkenEntityGL::new)
                     // give it chicken dimensions
-                    .dimensions(EntityDimensions.fixed(1.3964844F, 1.4F))
+                    .dimensions(EntityDimensions.fixed(2.5F, 2.5F))
                     .build());
     public static final EntityType<BlinkingWardenEntity> BLINKING_WARDEN = Registry.register(
             Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "blinking_warden"),
@@ -67,8 +76,9 @@ public class ModEntities {
                     .dimensions(EntityDimensions.fixed(1.3964844F, 1.4F))
                     .build());
 
-    public static final EntityType<EnderZoglinEntityGL> ENDERZOGLINGL = Registry.register(
-            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "enderzoglin"),
+
+    public static final EntityType<EnderZoglinEntityGL> ENDER_ZOGLIN = Registry.register(
+            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "ender_zoglin"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, EnderZoglinEntityGL::new)
                     // give it chicken dimensions
                     .dimensions(EntityDimensions.fixed(0.6F, 1.95F))
@@ -99,8 +109,8 @@ public class ModEntities {
                     .build());
 
 
-    public static final EntityType<EnderZoglinEntity> ENDER_ZOGLIN = Registry.register(
-            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "ender_zoglin"),
+    public static final EntityType<EnderZoglinEntity> ENDERZOGLIN = Registry.register(
+            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "enderzoglin"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, EnderZoglinEntity::new)
                     .dimensions(EntityDimensions.fixed(0.6F, 1.95F))
                     .build());

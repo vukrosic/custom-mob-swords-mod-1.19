@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.entity.client;
+package net.vukrosic.custommobswordsmod.entity.client.fireenderman;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

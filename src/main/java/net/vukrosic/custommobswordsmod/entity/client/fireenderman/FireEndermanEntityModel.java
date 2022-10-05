@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.entity.client;
+package net.vukrosic.custommobswordsmod.entity.client.fireenderman;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
