@@ -6,7 +6,7 @@
   "name": "Custom Mobs",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
-    "Vuk Rosić"
+    "Vuk Rosić vukrosic1@gmail.com"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
@@ -14,7 +14,6 @@
   },
 
   "license": "MIT",
-  "icon": "assets/modid/icon.png",
 
   "environment": "*",
   "entrypoints": {
@@ -32,7 +31,7 @@
   "depends": {
     "fabricloader": ">=0.14.9",
     "fabric": "*",
-    "minecraft": "~1.19",
+    "minecraft": "1.19.2",
     "java": ">=17"
   },
   "suggests": {

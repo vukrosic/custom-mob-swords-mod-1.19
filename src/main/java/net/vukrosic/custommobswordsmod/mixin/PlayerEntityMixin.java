@@ -19,9 +19,9 @@ import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.EnderZoglinEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.EnderZoglinEntityGL;
-import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.entity.custom.ShieldingShulkerEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.item.custom.ItemEntityMixinExt;
@@ -106,10 +106,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     public void tick (CallbackInfo info) {
 
             double randomNumber = Math.random();
-            if (randomNumber > 0.98) {
+            if (randomNumber > 0.92) {
                 if (super.isOnFire()) {
                     BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
-                    FireEndermanEntity fireEndermanEntity = new FireEndermanEntity(ModEntities.FIRE_ENDERMAN, world);
+                    FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
                     fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
                     world.spawnEntity(fireEndermanEntity);
                     // set fireEndermanEntity angry at player

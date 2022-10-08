@@ -12,6 +12,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -27,6 +28,7 @@ import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.item.ModItems;
+import net.vukrosic.custommobswordsmod.util.custom.EatenMobsByFrogKing;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -49,8 +51,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     public LivingEntity EatingEntity;
 
 // make a list of eaten mobs
-    public ArrayList<LivingEntity> EatenLivingEntities = new ArrayList<LivingEntity>();
-    public ArrayList<PlayerEntity> EatenPlayers = new ArrayList<PlayerEntity>();
+    
 
     protected float jumpStrength = 3;
     protected boolean inAir;
@@ -98,7 +99,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
             ArrowEntity arrowEntity = new ArrowEntity(world, player);
             arrowEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1 * 3.0F, 1.0F);
             world.spawnEntity(arrowEntity);
-*/
+            */
             player.sendMessage(Text.of("Tongue used!"), false);
 
 
@@ -130,18 +131,43 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
             if(distance > 2){
                 if(EatingEntity instanceof PlayerEntity){
                     PlayerEntity playerEntity = (PlayerEntity) EatingEntity;
-                    EatenPlayers.add(playerEntity);
+                    EatenMobsByFrogKing.EatenPlayers.add(playerEntity);
                     ((PlayerEntity)getMainPassenger()).sendMessage(Text.of("EATEN PLAYER"), false);
                 }
                 else{
-                    EatenLivingEntities.add((LivingEntity) EatingEntity);
+                    EatenMobsByFrogKing.EatenLivingEntities.add((LivingEntity) EatingEntity);
                     ((PlayerEntity)getMainPassenger()).sendMessage(Text.of("EATEN MOB"), false);
+                    //                                                                                                  <============= discards the mob
+                    EatingEntity.discard();
                 }
 
             }
         }
         super.tick();
     }
+    
+    
+    public void ShootEatenEntity(){
+        if(EatenMobsByFrogKing.EatenLivingEntities.size() > 0){
+            this.getMainPassenger().sendMessage(Text.of("SHOOTING EATEN MOB"));
+            LivingEntity entity = EatenMobsByFrogKing.EatenLivingEntities.get(0);
+            EatenMobsByFrogKing.EatenLivingEntities.remove(0);
+            entity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+            // set velocity forward from frog
+            Vec3d entityPos = entity.getPos();
+            // get where frog is looking at
+            Vec3d lookRotation = this.getRotationVec(1);
+            // caculate direction
+            Vec3d direction = lookRotation.subtract(entityPos).normalize();
+            // set velocity
+            entity.setVelocity(direction.multiply(20));
+
+        }
+    }
+    
+    
+    
+    
 
     private static final TrackedData<Boolean> ATTACKING =
             DataTracker.registerData(FrogKingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -215,7 +241,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
     @Override
     public double getMountedHeightOffset() {
-        return (double)1.3;
+        return (double)5;
     }
 
     public void updatePassengerPosition(Entity passenger) {

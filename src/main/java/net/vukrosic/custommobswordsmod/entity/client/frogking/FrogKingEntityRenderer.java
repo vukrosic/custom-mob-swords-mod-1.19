@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.entity.client;
+package net.vukrosic.custommobswordsmod.entity.client.frogking;
 
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -13,19 +13,19 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 public class FrogKingEntityRenderer extends GeoEntityRenderer<FrogKingEntity> {
     public FrogKingEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new FrogKingEntityModel());
-        this.shadowRadius = .8f;
+        this.shadowRadius = 2;
     }
 
     @Override
     public Identifier getTextureResource(FrogKingEntity instance) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/frog_king.png");
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/frogking.png");
     }
 
     @Override
     public RenderLayer getRenderType(FrogKingEntity animatable, float partialTicks,
                                      MatrixStack stack, VertexConsumerProvider renderTypeBuffer,
                                      VertexConsumer vertexBuilder, int packedLightIn, Identifier textureLocation) {
-        float scale = 4;
+        float scale = 2.5F;
         stack.scale(scale, scale, scale);
         return super.getRenderType(animatable, partialTicks, stack, renderTypeBuffer, vertexBuilder, packedLightIn, textureLocation);
     }

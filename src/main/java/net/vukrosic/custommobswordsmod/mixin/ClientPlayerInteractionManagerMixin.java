@@ -46,9 +46,9 @@ public class ClientPlayerInteractionManagerMixin {
             for(int i = 0; i < 360; i++) {
                 if(i % 20 == 0) {
                     client.particleManager.addParticle(ParticleTypes.WITCH, pos.getX() + i, pos.getY() + i, pos.getZ() + i, i, i, i);
-                    client.particleManager.addParticle(ModParticles.CHICKEN_PARTICLE,
+                    /*client.particleManager.addParticle(ModParticles.CHICKEN_PARTICLE,
                             pos.getX() + 0.5d, pos.getY() + 0.7d, pos.getZ() + 0.5d,
-                            Math.cos(i) * 0.35d, 0.15d, Math.sin(i) * 0.35d);
+                            Math.cos(i) * 0.35d, 0.15d, Math.sin(i) * 0.35d);*/
                 }
             }
         }

@@ -39,21 +39,12 @@ public class FireEndermanEntityGL extends EndermanEntity implements IAnimatable 
 
     public FireEndermanEntityGL(EntityType<? extends EndermanEntity> entityType, World world) {
         super(entityType, world);
-
     }
 
 
-/*
 
-    public static DefaultAttributeContainer.Builder setAttributes() {
-        return HostileEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0f)
-                .add(EntityAttributes.GENERIC_ATTACK_SPEED, 2.0f)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25f);
-    }*/
     public static DefaultAttributeContainer.Builder setAttributes(){
-        return ZombifiedPiglinEntity.createZombifiedPiglinAttributes();
+        return EndermanEntity.createEndermanAttributes();
     }
 
 

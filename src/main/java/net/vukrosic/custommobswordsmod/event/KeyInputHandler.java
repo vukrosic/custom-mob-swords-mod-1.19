@@ -43,15 +43,19 @@ import net.vukrosic.custommobswordsmod.screen.BlackScreen;
 import net.vukrosic.custommobswordsmod.screen.BlackScreenHandler;
 import org.lwjgl.glfw.GLFW;
 
+import static net.vukrosic.custommobswordsmod.util.custom.EatenMobsByFrogKing.EatenLivingEntities;
+
 public class KeyInputHandler {
     public static final String KEY_CATEGORY_CUSTOMMOBS = "key.category.custommobswordsmod.custommobs";
     public static final String KEY_SHOOT_TONGUE = "key.custommobswordsmod.shoot_tongue";
     public static final String KEY_SHOOT_BEAM = "key.custommobswordsmod.shoot_beam";
     public static final String KEY_SUMMON_SHULKER = "key.custommobswordsmod.summon_shulker";
+    public static final String KEY_SHOOT_MOB = "key.custommobswordsmod.shoot_mob";
 
     public static KeyBinding shootTongue;
     public static KeyBinding shootBeam;
     public static KeyBinding summonShulker;
+    public static KeyBinding shootMob;
 
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -78,11 +82,13 @@ public class KeyInputHandler {
                         (entityx) -> !entityx.isSpectator(),
                         raycastDistance
                 );
+                FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
+                frogKingEntity.swingHand(Hand.MAIN_HAND);
 
                 if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
                     if(player.getVehicle() != null && player.getVehicle() instanceof FrogKingEntity){
-                        FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
-                        frogKingEntity.swingHand(Hand.MAIN_HAND);
+                        //FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
+                        //frogKingEntity.swingHand(Hand.MAIN_HAND);
                         //frogKingEntity.tryAttack(entityHitResult.getEntity());
 
                         frogKingEntity.EatingEntity = (LivingEntity) entityHitResult.getEntity();
@@ -100,7 +106,14 @@ public class KeyInputHandler {
                 if(SetHunterCommand.pray != null){
                     ((PlayerEntityExt)SetHunterCommand.pray).SummonShieldingShulker();
                 }
+            }
 
+            if(shootMob.wasPressed()){
+                // get if player is mounted
+                if(client.player.getVehicle() != null && client.player.getVehicle() instanceof FrogKingEntity){
+                    FrogKingEntity frogKingEntity = (FrogKingEntity) client.player.getVehicle();
+                    frogKingEntity.ShootEatenEntity();
+                }
             }
         });
     }
@@ -129,6 +142,13 @@ public class KeyInputHandler {
                     KEY_SUMMON_SHULKER,
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_P,
+                    KEY_CATEGORY_CUSTOMMOBS
+            ));
+
+            shootMob = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    KEY_SHOOT_MOB,
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_L,
                     KEY_CATEGORY_CUSTOMMOBS
             ));
 

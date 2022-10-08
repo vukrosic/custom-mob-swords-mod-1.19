@@ -7,28 +7,28 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
-import net.vukrosic.custommobswordsmod.entity.custom.ChunkenEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenLaserEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class ChunkenEntityRendererGL extends GeoEntityRenderer<ChunkenEntityGL> {
+public class ChunkenLaserEntityRendererGL extends GeoEntityRenderer<ChunkenLaserEntityGL> {
 
-    public ChunkenEntityRendererGL(EntityRendererFactory.Context ctx) {
-        super(ctx, new ChunkenEntityModelGL());
+
+    public ChunkenLaserEntityRendererGL(EntityRendererFactory.Context ctx) {
+        super(ctx, new ChunkenLaserEntityModelGL());
         this.shadowRadius = .8f;
 
         ChunkenPhaseManager.createChunkenPhases();
     }
 
     @Override
-    public Identifier getTextureResource(ChunkenEntityGL instance) {
-        return ChunkenPhaseManager.getChunkenTexture();
-        // return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png");
+    public Identifier getTextureResource(ChunkenLaserEntityGL instance) {
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png");
     }
 
     @Override
-    public RenderLayer getRenderType(ChunkenEntityGL animatable, float partialTicks,
+    public RenderLayer getRenderType(ChunkenLaserEntityGL animatable, float partialTicks,
                                      MatrixStack stack, VertexConsumerProvider renderTypeBuffer,
                                      VertexConsumer vertexBuilder, int packedLightIn, Identifier textureLocation) {
 

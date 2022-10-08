@@ -11,7 +11,7 @@ public class ChunkenEntityRangedModelGL extends AnimatedGeoModel<ChunkenEntityRa
 
     @Override
     public Identifier getModelResource(ChunkenEntityRangedGL object) {
-        return new Identifier(CustomMobSwordsMod.MOD_ID, "geo/chicken_robot.geo.json");
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "geo/chicken_robot1.geo.json");
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueProjectileEntity;
 
 public class FrogKingTongueProjectileEntityRenderer extends ArrowEntityRenderer {
@@ -15,7 +16,7 @@ public class FrogKingTongueProjectileEntityRenderer extends ArrowEntityRenderer 
         super(context);
     }
 
-
+    /*
     @Override
     public void render(ArrowEntity persistentProjectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         FrogKingTongueProjectileEntity frogKingTongueProjectileEntity = (FrogKingTongueProjectileEntity) persistentProjectileEntity;
@@ -32,10 +33,10 @@ public class FrogKingTongueProjectileEntityRenderer extends ArrowEntityRenderer 
         }
 
         super.render(persistentProjectileEntity, f, g, matrixStack, vertexConsumerProvider, i);
-    }
+    }*/
 
     @Override
     public Identifier getTexture(ArrowEntity arrowEntity) {
-        return super.getTexture(arrowEntity);
+        return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png");
     }
 }
