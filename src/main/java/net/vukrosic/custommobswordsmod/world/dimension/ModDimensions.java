@@ -26,12 +26,12 @@ public class ModDimensions {
             LEWDIM_DIMENSION_KEY.getValue());
 */
 
-/*
+
     public static final RegistryKey<World> CHICKENDIM_DIMENSION_KEY = RegistryKey.of(Registry.WORLD_KEY,
             new Identifier(CustomMobSwordsMod.MOD_ID, "chickendim"));
     public static final RegistryKey<DimensionType> CHICKENDIM_TYPE_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY,
             CHICKENDIM_DIMENSION_KEY.getValue());
-*/
+
 /*
     public static final RegistryKey<World> KJDIM_DIMENSION_KEY = RegistryKey.of(Registry.WORLD_KEY,
             new Identifier(CustomMobSwordsMod.MOD_ID, "kjdim"));

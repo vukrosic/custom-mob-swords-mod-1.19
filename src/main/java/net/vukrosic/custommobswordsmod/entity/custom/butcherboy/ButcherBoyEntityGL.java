@@ -50,7 +50,6 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
     public ButcherBoyEntityGL(
         EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        ChunkenPhaseManager.resetChunkenPhase();
     }
 
 

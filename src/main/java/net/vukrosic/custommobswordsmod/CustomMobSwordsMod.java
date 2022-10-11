@@ -7,7 +7,6 @@ import net.vukrosic.custommobswordsmod.entity.ModBlockEntities;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.painting.ModPaintings;
-import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import net.vukrosic.custommobswordsmod.screen.ModScreenHandlers;
 import net.vukrosic.custommobswordsmod.util.ModRegistries;
 import net.vukrosic.custommobswordsmod.world.dimension.ModDimensions;
@@ -28,16 +27,16 @@ public class CustomMobSwordsMod implements ModInitializer {
 	public void onInitialize() {
 
 		ModItems.registerModItems();
-		ModBlocks.registerModBlocks();
+		//ModBlocks.registerModBlocks();
 		ModEntities.registerModEntities();
 		//ModVillagers.registerVillagers();
 		//ModVillagers.registerTrades();
 		ModRegistries.registerModStuffs();
-		ModBlockEntities.registerAllBlockEntities();
+		//ModBlockEntities.registerAllBlockEntities();
 		ModDimensions.register();
         GeckoLib.initialize();
 		ModEffects.registerEffects();
-		ModParticles.registerParticles();
+		//ModParticles.registerParticles();
 		ModScreenHandlers.registerAllScreenHandlers();
 		ModPaintings.registerPaintings();
 	}

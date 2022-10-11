@@ -1,12 +1,26 @@
 package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 
+import net.minecraft.client.util.math.Vector3d;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 
 import java.util.ArrayList;
 
 public class ChunkenPhaseManager {
+
+    public static PlayerEntity eatenPlayer = null;
+    public static Vec3d eatenPlayerPos = null;
+
+    public static Identifier defaultEatenPlayer = new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_gold.png");
     public static int chunkenPhase = 0;
+    public static int hitsPerPhase = 4;
+
+    public static float scalePerPhase = 1;
 
     static ArrayList<Identifier> textures = new ArrayList<Identifier>();
 
@@ -14,17 +28,33 @@ public class ChunkenPhaseManager {
     static ArrayList<String> walkAnimation = new ArrayList<>();
     static ArrayList<String> attackAnimation = new ArrayList<>();
 
+    public static PlayerEntity chickenEffectPlayer = null;
+
 
     public static void resetChunkenPhase() {
         chunkenPhase = 0;
     }
 
+    public static void set4Phase(){
+        chunkenPhase = 4;
+        if(eatenPlayer != null){
+            MinecraftServer server = eatenPlayer.getServer();
+            CommandManager commandManager = server.getPlayerManager().getServer().getCommandManager();
+            String xStr = String.valueOf(eatenPlayer.getX() + 8);
+            String yStr = String.valueOf(eatenPlayer.getY());
+            String zStr = String.valueOf(eatenPlayer.getZ());
+            //commandManager.executeWithPrefix(eatenPlayer.getCommandSource(), "/execute in minecraft:overworld run teleport " + eatenPlayer.getName().getString() + " " + xStr + " " + yStr + " " + zStr);
+            String command = "/execute in minecraft:overworld run teleport " + eatenPlayer.getName().getString() + " " + xStr + " " + yStr + " " + zStr;
+            commandManager.executeWithPrefix(eatenPlayer.getCommandSource(), command.toString());
+        }
+
+    }
 
     public static void createChunkenPhases(){
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png"));
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_2.png"));
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_3.png"));
-        textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_4.png"));
+        textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_gold.png"));
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_gold.png"));
 
 
@@ -63,6 +93,19 @@ public class ChunkenPhaseManager {
     }
 
     public static Identifier getChunkenTexture(){
+        if(eatenPlayer != null && chunkenPhase >= 3){
+            return get4Texture(eatenPlayer);
+        }
         return textures.get(chunkenPhase);
+    }
+
+    public static Identifier get4Texture(Entity player) {
+        if(player.getName().getString() == "Goldactual") {
+            return textures.set(4, new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_gold.png"));
+        } else if (player.getName().getString() == "Lewwolfe") {
+            return textures.set(4, new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_lew.png"));
+        } else {
+            return textures.set(4, new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_nate.png"));
+        }
     }
 }

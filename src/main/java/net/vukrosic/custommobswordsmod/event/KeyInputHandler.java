@@ -2,48 +2,27 @@ package net.vukrosic.custommobswordsmod.event;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.item.ArrowItem;
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+//import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
+import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
-import net.vukrosic.custommobswordsmod.entity.custom.ShieldingShulkerEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 import net.vukrosic.custommobswordsmod.screen.BlackScreen;
 import net.vukrosic.custommobswordsmod.screen.BlackScreenHandler;
 import org.lwjgl.glfw.GLFW;
-
-import static net.vukrosic.custommobswordsmod.util.custom.EatenMobsByFrogKing.EatenLivingEntities;
 
 public class KeyInputHandler {
     public static final String KEY_CATEGORY_CUSTOMMOBS = "key.category.custommobswordsmod.custommobs";
@@ -51,17 +30,20 @@ public class KeyInputHandler {
     public static final String KEY_SHOOT_BEAM = "key.custommobswordsmod.shoot_beam";
     public static final String KEY_SUMMON_SHULKER = "key.custommobswordsmod.summon_shulker";
     public static final String KEY_SHOOT_MOB = "key.custommobswordsmod.shoot_mob";
+    public static final String KEY_SUMMON_SUMMONER_MOB = "key.custommobswordsmod.spawn_summoner_mob";
+    public static final String KEY_ACTIVATE_CHUNKEN_4 = "key.custommobswordsmod.set_chunken_4";
 
     public static KeyBinding shootTongue;
-    public static KeyBinding shootBeam;
+    public static KeyBinding blackScreen;
     public static KeyBinding summonShulker;
     public static KeyBinding shootMob;
+    public static KeyBinding summonSummonerMob;
+    public static KeyBinding setChunkenTo4;
 
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (shootTongue.wasPressed()) {
                 ServerWorld serverWorld = client.getServer().getWorld(client.player.world.getRegistryKey());
-                ArrowEntity arrowEntity = new ArrowEntity(client.world, client.player);
                 PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
 
                 float raycastDistance = 500;
@@ -98,8 +80,8 @@ public class KeyInputHandler {
                 }
                 }
 
-            if(shootBeam.wasPressed()){
-                client.setScreen(new BlackScreen(new BlackScreenHandler(0, client.player.getInventory()), client.player.getInventory(), Text.of("")));
+            if(blackScreen.wasPressed()){
+                //client.setScreen(new BlackScreen(new BlackScreenHandler(0, client.player.getInventory()), client.player.getInventory(), Text.of("")));
             }
 
             if (summonShulker.wasPressed()) {
@@ -114,6 +96,24 @@ public class KeyInputHandler {
                     FrogKingEntity frogKingEntity = (FrogKingEntity) client.player.getVehicle();
                     frogKingEntity.ShootEatenEntity();
                 }
+            }
+
+            if(summonSummonerMob.wasPressed()){
+                ServerWorld serverWorld = client.getServer().getWorld(client.player.world.getRegistryKey());
+                PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
+                if(((PlayerEntityExt)player).getSummonerEntityGL() != null){
+                    ((PlayerEntityExt)player).getSummonerEntityGL().swingHand(Hand.MAIN_HAND);
+                }
+                //get all entities of type SummonerEntityGL
+                /*
+                serverWorld.getEntitiesByClass(SummonerEntityGL.class, new Box(-1,-1,-1,1,1,1), (entity) -> true).forEach(entity -> {
+                    entity.swingHand(Hand.MAIN_HAND);
+                });*/
+
+            }
+
+            if(setChunkenTo4.wasPressed()){
+                ChunkenPhaseManager.set4Phase();
             }
         });
     }
@@ -131,7 +131,7 @@ public class KeyInputHandler {
                     KEY_CATEGORY_CUSTOMMOBS
             ));
 
-            shootBeam = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            blackScreen = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                     KEY_SHOOT_BEAM,
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_H,
@@ -149,6 +149,20 @@ public class KeyInputHandler {
                     KEY_SHOOT_MOB,
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_L,
+                    KEY_CATEGORY_CUSTOMMOBS
+            ));
+
+            summonSummonerMob = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    KEY_SUMMON_SUMMONER_MOB,
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_K,
+                    KEY_CATEGORY_CUSTOMMOBS
+            ));
+
+            setChunkenTo4 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    KEY_ACTIVATE_CHUNKEN_4,
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_N,
                     KEY_CATEGORY_CUSTOMMOBS
             ));
 

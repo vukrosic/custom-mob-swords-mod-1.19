@@ -12,7 +12,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -25,10 +24,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
-import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.item.ModItems;
-import net.vukrosic.custommobswordsmod.util.custom.EatenMobsByFrogKing;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -38,13 +35,11 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-import java.util.ArrayList;
-
 
 public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
     private AnimationFactory factory = new AnimationFactory(this);
-    private FrogKingTongueEntity tongue;
+    //private FrogKingTongueEntity tongue;
 
     public int MobPullCounter = 0;
     public int MobPullMaxCounter = 6;
@@ -59,9 +54,9 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     public FrogKingEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 
         super(entityType, world);
-        tongue = new FrogKingTongueEntity(ModEntities.FROG_KING_TONGUE, world);
-        tongue.setOwner(this);
-        tongue.createTongueProjectile();
+        //tongue = new FrogKingTongueEntity(ModEntities.FROG_KING_TONGUE, world);
+        //tongue.setOwner(this);
+        //tongue.createTongueProjectile();
     }
 
 
@@ -75,37 +70,6 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     // get mounted entity
 
 
-    public void useTongue(Entity entity){
-        // set velocity in entity rotation
-        // reset velocity
-        if(world.isClient()){
-            return;
-        }
-        // make a 5% chance
-
-        if(entity instanceof PlayerEntity){
-
-            PlayerEntity player = (PlayerEntity) entity;
-
-
-            FrogKingTongueProjectileEntity frogKingTongueProjectileEntity = new FrogKingTongueProjectileEntity(ModEntities.FROG_KING_TONGUE_PROJECTILE, world);
-            world.spawnEntity(frogKingTongueProjectileEntity);
-            frogKingTongueProjectileEntity.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), 0, 0);
-            frogKingTongueProjectileEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 0.7F * 3.0F, 1.0F);
-            world.spawnEntity(frogKingTongueProjectileEntity);
-            frogKingTongueProjectileEntity.setOwner(player);
-
-            /*
-            ArrowEntity arrowEntity = new ArrowEntity(world, player);
-            arrowEntity.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 1 * 3.0F, 1.0F);
-            world.spawnEntity(arrowEntity);
-            */
-            player.sendMessage(Text.of("Tongue used!"), false);
-
-
-        }
-
-    }
 
     /*
      * TONGUE ATTACK
@@ -241,7 +205,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
     @Override
     public double getMountedHeightOffset() {
-        return (double)5;
+        return (double)4.4F;
     }
 
     public void updatePassengerPosition(Entity passenger) {

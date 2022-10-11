@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 
 public class ModBlocks {
-
+/*
     private static Block registerBlock(String name, Block block, ItemGroup group){
         registerBlockItem(name, block, group);
         return Registry.register(Registry.BLOCK, new Identifier(CustomMobSwordsMod.MOD_ID, name), block);
@@ -27,5 +27,5 @@ public class ModBlocks {
 
     public static void registerModBlocks() {
         CustomMobSwordsMod.LOGGER.info("Registering Mod Blocks for " + CustomMobSwordsMod.MOD_ID);
-    }
+    }*/
 }

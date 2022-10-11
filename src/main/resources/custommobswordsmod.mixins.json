@@ -5,13 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "TickCounterMixin",
-    "PlayerEntityMixin",
     "LivingEntityMixin",
+    "PlayerEntityMixin",
+    "IronGolemEntityMixin",
     "ItemEntityMixin",
     "EntityMixin",
     "HandledScreenMixin",
-    "InGameHudMixin",
     "WorldMixin",
+    "ServerPlayerInteractionManagerMixin",
+    "InGameHudMixin",
     "ClientPlayerInteractionManagerMixin"
   ],
   "client": [

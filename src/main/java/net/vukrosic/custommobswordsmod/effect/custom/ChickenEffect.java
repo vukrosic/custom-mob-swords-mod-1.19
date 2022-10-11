@@ -8,11 +8,10 @@ import net.minecraft.text.Text;
 
 public class ChickenEffect extends StatusEffect {
 
-
     public ChickenEffect(StatusEffectCategory statusEffectCategory, int color) {
         super(statusEffectCategory, color);
     }
-
+/*
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
         return true;
@@ -26,7 +25,7 @@ public class ChickenEffect extends StatusEffect {
             ((PlayerEntity) entity).sendMessage(Text.of("UPDATING CHICKEN EFFECT"), true);
             // on break block play chicken sound
             entity
-        }*/
+        }*//*
         super.applyUpdateEffect(entity, amplifier);
-    }
+    }*/
 }

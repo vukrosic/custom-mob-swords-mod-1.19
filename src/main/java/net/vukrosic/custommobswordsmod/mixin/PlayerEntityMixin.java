@@ -1,32 +1,42 @@
 package net.vukrosic.custommobswordsmod.mixin;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import net.vukrosic.custommobswordsmod.command.RestoreDeathCommand;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
-import net.vukrosic.custommobswordsmod.entity.custom.EnderZoglinEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.EnderZoglinEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.entity.custom.ShieldingShulkerEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.SpittingChickenEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.item.custom.ItemEntityMixinExt;
 import net.vukrosic.custommobswordsmod.util.CarbonPoisoningEffectManager;
 import net.vukrosic.custommobswordsmod.util.FireInfectedPlayers;
+import net.vukrosic.custommobswordsmod.world.dimension.ModDimensions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,10 +54,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     int ShieldingShulkerShield = 0;
 
+    boolean isInChickenDimention = false;
+    public boolean hasChickenEffect = false;
+    public SummonerEntityGL summonerEntityGL = null;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
+
+
 
 
 
@@ -58,12 +73,40 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         return null;
     }
 
+    @Shadow public abstract Text getName();
+
     boolean fireInfected = false;
 
+    public boolean hasChickenEffect(){
+        return hasChickenEffect;
+    };
     @Override
     public void setFireInfected(boolean fireInfected) {
 
         this.fireInfected = fireInfected;
+    }
+
+    public void setSummonerEntityGL(SummonerEntityGL summonerEntityGL){
+        this.summonerEntityGL = summonerEntityGL;
+    }
+    public SummonerEntityGL getSummonerEntityGL(){
+        return summonerEntityGL;
+    }
+
+    public void setInChickenDimention(boolean isInChickenDimention){
+        if(isInChickenDimention){
+            CommandManager commandManager = world.getServer().getCommandManager();
+            commandManager.executeWithPrefix(world.getServer().getCommandSource(), "gamemode adventure");
+        }
+        else {
+            CommandManager commandManager = world.getServer().getCommandManager();
+            commandManager.executeWithPrefix(world.getServer().getCommandSource(), "gamemode survival");
+        }
+        this.isInChickenDimention = isInChickenDimention;
+    }
+
+    public boolean isInChickenDimention(){
+        return isInChickenDimention;
     }
 
     @Override
@@ -94,30 +137,64 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
-
-
-
-
-
-
-
-
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick (CallbackInfo info) {
+        if (!world.isClient) {
+            // check if chicken dimension every 20th tick
 
-            double randomNumber = Math.random();
-            if (randomNumber > 0.92) {
-                if (super.isOnFire()) {
-                    BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
-                    FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
-                    fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
-                    world.spawnEntity(fireEndermanEntity);
-                    // set fireEndermanEntity angry at player
-                    fireEndermanEntity.setTarget(this);
+            if (world.getRegistryKey() == ModDimensions.CHICKENDIM_DIMENSION_KEY) {
+                double y = this.getPos().y;
+                System.out.println("y = " + y);
+                System.out.println("y < (-100) = " + (y < (-100)));
+                if(y < (-100)){
+                    System.out.println("Setting position");
+                    this.teleport(this.getPos().x + Math.random() * 100, 200, this.getPos().z + Math.random() * 100);
+            }
+                setInChickenDimention(true);
+            } else {
+                setInChickenDimention(false);
+            }
+
+
+///execute in minecraft:overworld teleport ~ ~ ~
+
+            if(isInChickenDimention) {
+                if (Math.random() < 1) {
+                    for (int i = 0; i < 2; i++) {
+                        SpittingChickenEntity spittingChickenEntity = new SpittingChickenEntity(ModEntities.SPITTING_CHICKEN, world);
+                        double x = this.getPos().x + (Math.random() * 60) - 30;
+                        double z = this.getPos().z + (Math.random() * 60) - 30;
+                        // random yaw between 0 and 360
+                        float yawC = (float) (Math.random() * 360);
+                        // random pitch between -90 and 90
+                        float pitchC = (float) ((Math.random() * 180) - 90);
+                        spittingChickenEntity.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
+                        world.spawnEntity(spittingChickenEntity);
+                        world.addParticle(ParticleTypes.WITCH, x, this.getPos().y, z, 2, 2, 2);
+                    }
+
                 }
             }
         }
-    //}
+
+
+
+
+
+
+        double randomNumber = Math.random();
+        if (randomNumber > 0.92) {
+            if (super.isOnFire()) {
+                BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
+                FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
+                fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
+                world.spawnEntity(fireEndermanEntity);
+                // set fireEndermanEntity angry at player
+                fireEndermanEntity.setTarget(this);
+            }
+        }
+    }
+//}
 
 
 
@@ -209,6 +286,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
+
 /*
     @Overwrite
     @Nullable
@@ -282,7 +360,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
-
+/*
     @Inject(method = "attackLivingEntity", at = @At("HEAD"), cancellable = true)
     protected void attackLivingEntity(LivingEntity target, CallbackInfo ci) {
         if(target.getName() == ModEntities.ENDERZOGLIN.getName()){
@@ -290,10 +368,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             enderZoglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
             world.spawnEntity(enderZoglinEntity);
         }
-    }
+    }*/
 
     public void SummonShieldingShulker(){
-        sendMessage(Text.of("--------------- client = " + this.world.isClient()), false);
         if(!this.world.isClient() && this.getShieldingShulkerEntity() == null) {
 
             ShieldingShulkerEntity shieldingShulkerEntity = new ShieldingShulkerEntity(EntityType.SHULKER, this.world);
@@ -314,7 +391,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         // make name of the bar "" to hide it
         serverBossBar.setName(Text.of("Shield Progress"));
         this.shieldingShulkerEntity = shieldingShulkerEntity;
-        sendMessage(Text.of("shieldshulkerentity is set to " + shieldingShulkerEntity), false);
     }
 
     public ShieldingShulkerEntity getShieldingShulkerEntity() {
@@ -326,7 +402,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         if (this.activeItemStack.isOf(ModItems.ABSORPTION_SHIELD_ITEM)) {
             if (!this.world.isClient && this.shieldingShulkerEntity != null) {
                 this.addBeamProgress(amount);
-                this.sendMessage(Text.of("Shielding Shulker: " + this.BeamProgress), false);
             }
             if(this.world.isClient()){
                 //add crit particles
@@ -341,8 +416,42 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     public void addBeamProgress(float beamProgress) {
         this.BeamProgress += beamProgress / 500;
         serverBossBar.setPercent(BeamProgress);
-        sendMessage(Text.of("Beam progress: " + BeamProgress), false);
     }
 
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    public void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if(RestoreDeathCommand.speedruner != null && this.getName() == RestoreDeathCommand.speedruner.getName()){
+            RestoreDeathCommand.saveState();
+        }
+    }
+/*
+    // inject into interraction with blocks
+    @Inject(method = "shouldCancelInteraction", at = @At("HEAD"), cancellable = true)
+    public void shouldCancelInteraction(CallbackInfoReturnable<Boolean> cir) {
+        if(isInChickenDimention){
+            cir.setReturnValue(true);
+            return;
+        }
+    }
+*/
+    @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
+    public void interact(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if(isInChickenDimention){
+            entity = new EnderZoglinEntityGL(ModEntities.ENDER_ZOGLIN, world);
+            //cir.setReturnValue(ActionResult.FAIL);
+        }
+    }
+
+    @Override
+    public void setHealth(float health) {
+
+        if(isInChickenDimention()){
+            //super.setHealth(getHealth());
+        }
+        else {
+            super.setHealth(health);
+        }
+
+    }
 
 }

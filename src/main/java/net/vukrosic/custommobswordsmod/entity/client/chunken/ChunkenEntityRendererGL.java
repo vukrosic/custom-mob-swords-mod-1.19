@@ -32,6 +32,7 @@ public class ChunkenEntityRendererGL extends GeoEntityRenderer<ChunkenEntityGL> 
                                      MatrixStack stack, VertexConsumerProvider renderTypeBuffer,
                                      VertexConsumer vertexBuilder, int packedLightIn, Identifier textureLocation) {
 
+        stack.scale(0.5f, 0.5f, 0.5f);
         return super.getRenderType(animatable, partialTicks, stack, renderTypeBuffer, vertexBuilder, packedLightIn, textureLocation);
     }
 

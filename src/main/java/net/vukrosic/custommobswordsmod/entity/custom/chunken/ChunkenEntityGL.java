@@ -3,6 +3,7 @@ package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -12,6 +13,7 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.sound.SoundEvent;
@@ -20,8 +22,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
+import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueProjectileEntity;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.example.entity.RocketProjectile;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -33,53 +39,84 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 
 public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
-    int hitsPerPhase = 4;
-    int hitsToNextPhase = hitsPerPhase;
+    int hitsToNextPhase = ChunkenPhaseManager.hitsPerPhase;
     private AnimationFactory factory = new AnimationFactory(this);
 
-    boolean hunterEaten = false;
-    boolean rotatingTowardsPlayer = false;
+    int attackTimer, maxAttackTimer = 10;
+    boolean canAttack = false;
 
 
+    int poopEggTimer = 40;
+    boolean hasEggToPoop = false;
 
     public ChunkenEntityGL(
         EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        ChunkenPhaseManager.resetChunkenPhase();
     }
 
 
 
     @Override
     public void tick() {
+        if(hasEggToPoop){
+            poopEggTimer--;
+            if(poopEggTimer <= 0){
+                hasEggToPoop = false;
+                poopEggTimer = 40;
+                HunterEggEntity egg = new HunterEggEntity(ModEntities.HUNTER_EGG, world);
+                egg.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+                world.spawnEntity(egg);
+            }
+        }
+
         if(getTarget() == null) {
             setTarget(world.getClosestPlayer(this, 40));
         }
-        if(ChunkenPhaseManager.chunkenPhase == 4) {
+        if(ChunkenPhaseManager.chunkenPhase == 3) {
             // if distance to target is 2 blocks
             if(this.getTarget() != null && this.getTarget() instanceof PlayerEntity){
                 PlayerEntity player = (PlayerEntity) this.getTarget();
+            }
+        }
+        if(ChunkenPhaseManager.chunkenPhase == 4) {
+            attackTimer--;
+            if(attackTimer <= 5 && canAttack) {
+                ShootRocket();
+                if(attackTimer <= 0) {
+                    attackTimer = maxAttackTimer;
+                    canAttack = false;
+                }
             }
         }
         super.tick();
     }
 
 
-
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if(!(target instanceof PlayerEntity)) {
+            return;
+        }
+        super.setTarget(target);
+    }
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if(!world.isClient() && ChunkenPhaseManager.chunkenPhase < 5) {
+        if(!world.isClient() && ChunkenPhaseManager.chunkenPhase <= 2) {
             if (source.getAttacker() instanceof PlayerEntity n) {
                 PlayerEntity attacker = (PlayerEntity) source.getAttacker();
                 MinecraftServer server = source.getSource().getServer();
                 CommandManager commandManager = server.getPlayerManager().getServer().getCommandManager();
-                commandManager.executeWithPrefix(attacker.getCommandSource(), "/scale add 0.1 @e[type=custommobswordsmod:chunkengl]");
+                float scale = ChunkenPhaseManager.scalePerPhase / ChunkenPhaseManager.hitsPerPhase;
+                String scaleString = String.valueOf(scale);
+                String command = "/scale add " + scaleString + " @e[type=custommobswordsmod:chunkengl]";
+                /*attacker.sendMessage(Text.of("IS IT THE SAME: " + command.equals("/scale add 2 @e[type=custommobswordsmod:chunkengl]")), false);
+                attacker.sendMessage(Text.of(("/scale add 2 @e[type=custommobswordsmod:chunkengl]")), false);*/
+                commandManager.executeWithPrefix(attacker.getCommandSource(), command);
                 hitsToNextPhase--;
-                if(hitsToNextPhase == 0 && ChunkenPhaseManager.chunkenPhase < 4) {
+                if(hitsToNextPhase <= 0 && ChunkenPhaseManager.chunkenPhase < 3) {
                     ChunkenPhaseManager.chunkenPhase++;
-                    hitsToNextPhase = hitsPerPhase;
-                    world.getPlayers().get(0).sendMessage(Text.of("going to the next phase = " + ChunkenPhaseManager.chunkenPhase), false);
+                    hitsToNextPhase = ChunkenPhaseManager.hitsPerPhase;
                 }
             }
         }
@@ -88,23 +125,82 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public boolean tryAttack(Entity target) {
-        if(distanceTo(target) < 2.5) {
+        if(target != null && !(target instanceof PlayerEntity)) {
             return false;
         }
-        this.lookAtEntity(this.getTarget(), 360, 360);
-        // this.getTarget().setInvisible(true);
-        if(ChunkenPhaseManager.chunkenPhase == 4) {
-            rotatingTowardsPlayer = true;
-            FrogKingTongueProjectileEntity projectile = new FrogKingTongueProjectileEntity(ModEntities.FROG_KING_TONGUE_PROJECTILE, world);
-            projectile.refreshPositionAndAngles(this.getX(), this.getY() + 1.5, this.getZ(), this.getYaw(), this.getPitch());
-            projectile.setPosition(this.getX(), this.getY() + 3.5, this.getZ());
-            projectile.setVelocity(projectile.getRotationVector().multiply(3));
-            projectile.setNoGravity(true);
-            world.spawnEntity(projectile);
+
+        if (ChunkenPhaseManager.chunkenPhase == 0 || ChunkenPhaseManager.chunkenPhase == 1) {
+            if (distanceTo(target) > 2.5) {
+                return false;
+            }
         }
-        return super.tryAttack(target);
+
+        if (ChunkenPhaseManager.chunkenPhase == 2 || ChunkenPhaseManager.chunkenPhase == 3) {
+            if (distanceTo(target) > 3.5) {
+                return false;
+            }
+        }
+
+        if (ChunkenPhaseManager.chunkenPhase == 4) {
+            if (distanceTo(target) > 15) {
+                return false;
+            }
+        }
+
+        if (ChunkenPhaseManager.chunkenPhase == 0 ||
+            ChunkenPhaseManager.chunkenPhase == 1 ||
+            ChunkenPhaseManager.chunkenPhase == 2) {
+            return super.tryAttack(target);
+        }
+
+        if (ChunkenPhaseManager.chunkenPhase == 3) {
+            this.lookAtEntity(this.getTarget(), 360, 360);
+            eatHunter(target);
+            ChunkenPhaseManager.chunkenPhase = 4;
+            return super.tryAttack(target);
+        }
+
+        if (ChunkenPhaseManager.chunkenPhase == 4) {
+            if (!world.isClient) {
+                attackTimer = maxAttackTimer;
+                canAttack = true;
+            }
+            return super.tryAttack(target);
+        } else {
+            return super.tryAttack(target);
+        }
+
+
     }
 
+    void ShootRocket(){
+        if(this.getTarget() != null) {
+            ChunkenRocketEntity abstractarrowentity = new ChunkenRocketEntity(ModEntities.CHUNKEN_ROCKET, world);
+            // get direction towards target
+            /*Vec3d direction = this.getTarget().getPos().subtract(this.getPos()).normalize();
+            abstractarrowentity.setVelocity(direction.multiply(2));*/
+            abstractarrowentity.setVelocity(this, this.getPitch(), this.getYaw(), 0.0F,
+                0.25F * 3.0F, 0);
+            abstractarrowentity.refreshPositionAndAngles(this.getX(), this.getBodyY(0.8F),
+                    this.getZ(), 0, 0);
+            abstractarrowentity.setDamage(7);
+            abstractarrowentity.hasNoGravity();
+            world.spawnEntity(abstractarrowentity);
+        }
+    }
+
+
+
+    void eatHunter(Entity player){
+        ChunkenPhaseManager.eatenPlayerPos = player.getPos();
+        player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/execute in custommobswordsmod:chickendim run teleport ~ 160 ~");
+        ChunkenPhaseManager.eatenPlayer = (PlayerEntity) player;
+        ((PlayerEntityExt)player).setInChickenDimention(true);
+        ChunkenPhaseManager.eatenPlayer = (PlayerEntity) player;
+
+        hasEggToPoop = true;
+        //player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/gamemode adventure");
+    }
 
 
 
@@ -126,6 +222,8 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         if (event.isMoving()) {
+            // set animatino speed to 5x
+            event.getController().setAnimationSpeed(5);
             event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getWalkAnimation(), true));
             return PlayState.CONTINUE;
         }
@@ -143,32 +241,26 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
 
             event.getController().markNeedsReload();
-            if(ChunkenPhaseManager.chunkenPhase < 4) {
+            if(ChunkenPhaseManager.chunkenPhase < 3) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getAttackAnimation(), false));
-                event.getController().setAnimationSpeed(2);
+                event.getController().setAnimationSpeed(3);
             }
-            else {
-                if(!hunterEaten){
-                    event.getController().setAnimationSpeed(1);
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.chicken.phase5_skills_attack", false));
-                    hunterEaten = true;
-                }
-                else{
-                    event.getController().setAnimationSpeed(1);
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.chicken.phase5_laser_second_part", false));
-                    /*
-                    ChunkenLaserEntityGL laser = new ChunkenLaserEntityGL(ModEntities.CHUNKEN_LASERGL, world);
-                    laser.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
-                    laser.setPos(this.getX(), this.getY() + 1.5, this.getZ());
-                    world.spawnEntity(laser);
-                    // set velocity towards player
-                    Vec3d dir = this.getTarget().getPos().subtract(this.getPos()).normalize();
-                    laser.setVelocity(dir.multiply(2));*/
-                }
-
+            else if(ChunkenPhaseManager.chunkenPhase == 3){
+                event.getController().setAnimationSpeed(1);
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.chicken.phase5_skills_attack", false));
             }
-
-
+            else{
+                event.getController().setAnimationSpeed(1.75f);
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.chicken.phase5_laser_first_part", false));
+                /*
+                ChunkenLaserEntityGL laser = new ChunkenLaserEntityGL(ModEntities.CHUNKEN_LASERGL, world);
+                laser.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+                laser.setPos(this.getX(), this.getY() + 1.5, this.getZ());
+                world.spawnEntity(laser);
+                // set velocity towards player
+                Vec3d dir = this.getTarget().getPos().subtract(this.getPos()).normalize();
+                laser.setVelocity(dir.multiply(2));*/
+            }
             this.handSwinging = false;
         }
 
@@ -187,7 +279,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 2.2D, false));
+        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.5D, false));
         this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.75f, 1));
         this.goalSelector.add(4, new LookAroundGoal(this));
 

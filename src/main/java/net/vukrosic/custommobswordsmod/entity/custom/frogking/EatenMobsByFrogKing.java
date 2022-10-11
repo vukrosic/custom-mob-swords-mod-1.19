@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.util.custom;
+package net.vukrosic.custommobswordsmod.entity.custom.frogking;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

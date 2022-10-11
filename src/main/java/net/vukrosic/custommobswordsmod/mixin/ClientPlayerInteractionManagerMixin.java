@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.vukrosic.custommobswordsmod.effect.ModEffects;
-import net.vukrosic.custommobswordsmod.particle.ModParticles;
+import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,10 +30,21 @@ public class ClientPlayerInteractionManagerMixin {
     public void breakBlock(BlockPos pos, CallbackInfoReturnable info) {
         PlayerEntity player = MinecraftClient.getInstance().player;
         MinecraftClient client = MinecraftClient.getInstance();
-        player.sendMessage(Text.of("You just broke the block"), false);
-        if(player.getStatusEffect(ModEffects.CHICKEN) != null){
+        if(((PlayerEntityExt)player).hasChickenEffect()){
             player.sendMessage(Text.of("Sound and particles should play"), false);
             client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_CHICKEN_AMBIENT, 1.0F, 15.0F));
+            if(!player.world.isClient){
+                player.world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 10.0F, 1.0F);
+            }else
+                MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_CHICKEN_AMBIENT, 1.0F));
+            player.world.playSound(player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 10.0F, 1.0F, false);
+            player.world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 5.0F, 1.0F + (player.world.random.nextFloat() - player.world.random.nextFloat()) * 0.2F);
+
+            // spawn particles
+            for(int i = 0; i < 10; i++){
+                player.world.addParticle(ParticleTypes.CRIT, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
+                player.world.addParticle(ParticleTypes.CRIT, pos.getX(), pos.getY(), pos.getZ(), 1.0D, 1.0D, 1.0D);
+            }
 
         }
     }
