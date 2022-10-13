@@ -16,7 +16,7 @@ public class ChunkenEntityRendererGL extends GeoEntityRenderer<ChunkenEntityGL> 
 
     public ChunkenEntityRendererGL(EntityRendererFactory.Context ctx) {
         super(ctx, new ChunkenEntityModelGL());
-        this.shadowRadius = .8f;
+        this.shadowRadius = .3f;
 
         ChunkenPhaseManager.createChunkenPhases();
     }

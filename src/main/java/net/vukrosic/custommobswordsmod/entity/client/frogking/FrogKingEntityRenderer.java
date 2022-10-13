@@ -25,7 +25,7 @@ public class FrogKingEntityRenderer extends GeoEntityRenderer<FrogKingEntity> {
     public RenderLayer getRenderType(FrogKingEntity animatable, float partialTicks,
                                      MatrixStack stack, VertexConsumerProvider renderTypeBuffer,
                                      VertexConsumer vertexBuilder, int packedLightIn, Identifier textureLocation) {
-        float scale = 2.5F;
+        float scale = 2F;
         stack.scale(scale, scale, scale);
         return super.getRenderType(animatable, partialTicks, stack, renderTypeBuffer, vertexBuilder, packedLightIn, textureLocation);
     }

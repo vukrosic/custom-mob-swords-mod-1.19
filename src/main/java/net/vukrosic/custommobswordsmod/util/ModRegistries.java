@@ -11,13 +11,15 @@ import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.*;
 import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ButcherBoyEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ButcherCowSpawnEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ExplosiveCowEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenEntityGL;
-import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenEntityRangedGL;
-import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenRocketEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.SpittingChickenEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.corruptedallay.CorruptedAllayVexEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 
 public class ModRegistries {
@@ -49,6 +51,9 @@ public class ModRegistries {
         FabricDefaultAttributeRegistry.register(ModEntities.BUTCHER_BOY, ButcherBoyEntityGL.setAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.EXPLOSIVE_COW, ExplosiveCowEntity.setAttributes());
         FabricDefaultAttributeRegistry.register(ModEntities.SUMMONER, SummonerEntityGL.setAttributes());
+        FabricDefaultAttributeRegistry.register(ModEntities.SHIELDING_SHULKERGL, ShieldingShulkerEntityGL.setAttributes());
+        FabricDefaultAttributeRegistry.register(ModEntities.NATE_DIM_SPIDER, NateDimSpiderEntity.setAttributes());
+        FabricDefaultAttributeRegistry.register(ModEntities.BUTCHER_COW_SPAWN_ENTITY, ButcherCowSpawnEntity.setAttributes());
     }
 
 

@@ -12,6 +12,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.sound.SoundEvent;
@@ -108,6 +109,8 @@ public class ChunkenEntity extends HostileEntity implements IAnimatable {
     @Override
     public boolean damage(DamageSource source, float amount) {
         // if attacked by a player
+        //get cow head item
+        // drop it
 
         // check if on cliient
         if(!world.isClient() && scale < 10) {

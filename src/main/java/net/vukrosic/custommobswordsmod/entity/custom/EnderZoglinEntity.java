@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -30,7 +31,8 @@ public class EnderZoglinEntity extends ZombifiedPiglinEntity {
     }
 
     public static DefaultAttributeContainer.Builder setAttributes(){
-        return ZombifiedPiglinEntity.createZombifiedPiglinAttributes();
+        return ZombifiedPiglinEntity.createZombifiedPiglinAttributes().
+                add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0D);
     }
 /*
     @Override
@@ -70,7 +72,7 @@ public class EnderZoglinEntity extends ZombifiedPiglinEntity {
                 }
             }
 
-            if (randomNumber > 0.6) {
+            if (randomNumber > 0.9) {
                 // break a random block in a 10 block radius
                 int breakBlockRadius = 6;
                 BlockPos pos = new BlockPos(world.getRandom().nextInt(breakBlockRadius), world.getRandom().nextInt(breakBlockRadius), world.getRandom().nextInt(breakBlockRadius));

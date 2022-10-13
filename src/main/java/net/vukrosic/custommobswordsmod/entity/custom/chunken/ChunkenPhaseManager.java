@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class ChunkenPhaseManager {
 
+
     public static PlayerEntity eatenPlayer = null;
     public static Vec3d eatenPlayerPos = null;
 

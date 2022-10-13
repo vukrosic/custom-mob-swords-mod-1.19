@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.command.CommandOutput;
+import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -17,6 +18,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.entity.EntityLike;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
+import net.vukrosic.custommobswordsmod.entity.custom.LivingEntityExt;
 import net.vukrosic.custommobswordsmod.util.IZombieEntityMixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -27,7 +30,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements Nameable, EntityLike, CommandOutput {
+public abstract class LivingEntityMixin extends Entity implements Nameable, EntityLike, CommandOutput, LivingEntityExt {
+
+    boolean beingShotFromFrogKing = false;
+    public boolean getBeingShotFromFrogKing() {
+        return beingShotFromFrogKing;
+    }
+    public void setBeingShotFromFrogKing(boolean beingShotFromFrogKing) {
+        this.beingShotFromFrogKing = beingShotFromFrogKing;
+    }
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -60,6 +71,24 @@ public abstract class LivingEntityMixin extends Entity implements Nameable, Enti
         }
         this.velocityDirty = true;
     }
+
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    public void tick(CallbackInfo ci) {
+        if(beingShotFromFrogKing){
+            if(SetHunterCommand.pray != null) {
+                SetHunterCommand.pray.sendMessage(Text.of(" SHOULD BE DOING DAMAGE"), false);
+            }
+            world.getOtherEntities(this, this.getBoundingBox().expand(1), (entity) -> {
+                return entity instanceof LivingEntity;
+            }).forEach((entity) -> {
+                entity.damage(DamageSource.MAGIC, 100);
+                if(SetHunterCommand.pray != null){
+                    SetHunterCommand.pray.sendMessage(Text.of(" AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"), false);
+                }
+            });
+        }
+    }
+
 
     /*
     @Inject(at = @At("HEAD"), method = "jump", cancellable = true)

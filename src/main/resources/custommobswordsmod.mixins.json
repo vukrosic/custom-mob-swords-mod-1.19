@@ -14,7 +14,9 @@
     "WorldMixin",
     "ServerPlayerInteractionManagerMixin",
     "InGameHudMixin",
-    "ClientPlayerInteractionManagerMixin"
+    "ClientPlayerInteractionManagerMixin",
+    "HungerManagerMixin",
+    "CompassAnglePredicateProviderMixin"
   ],
   "client": [
     "ExampleMixin"

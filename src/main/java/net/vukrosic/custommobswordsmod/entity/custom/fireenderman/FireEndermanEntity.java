@@ -38,6 +38,14 @@ public class FireEndermanEntity extends EndermanEntity {
         super.setTarget(target);
     }
 
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        // get if the damage source is fire
+        if(source.isFire()){
+            return false;
+        }
+        return super.damage(source, amount);
+    }
 
     @Override
     public void setAngerTime(int angerTime) {

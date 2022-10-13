@@ -12,9 +12,6 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.EntityTypePredicate;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -22,9 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
-import net.vukrosic.custommobswordsmod.entity.custom.ExplosiveCowEntity;
-import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
-import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueProjectileEntity;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -111,7 +105,7 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
             if(this.distanceTo(target) < 2){
                 target.setVelocity(0, -0.5, 0);
                 // set player 2 bock down into the ground and make them suffocate
-                target.teleport(target.getX(), target.getY() - 2, target.getZ());
+                target.teleport(target.getX(), target.getY() - 3, target.getZ());
                 if(target instanceof PlayerEntity){
                     ((PlayerEntity)target).sendMessage(Text.of("pushing player into the ground"), false);
                 }
@@ -260,21 +254,21 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_DOLPHIN_AMBIENT;
+        return SoundEvents.ENTITY_COW_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_CHICKEN_HURT;
+        return SoundEvents.ENTITY_COW_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_CHICKEN_DEATH;
+        return SoundEvents.ENTITY_COW_DEATH;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15f, 1.0f);
+        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15f, 1.0f);
     }
 }

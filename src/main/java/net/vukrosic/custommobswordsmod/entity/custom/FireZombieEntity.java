@@ -4,6 +4,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -27,37 +28,7 @@ public class FireZombieEntity extends ZombieEntity {
         super(entityType, world);
         this.setOnFireFor(9999);
     }
-/*
-    @Override
-    public void onDeath(DamageSource source) {
-        if (!this.isRemoved() && !this.dead) {
-            Entity entity = source.getAttacker();
-            LivingEntity livingEntity = this.getPrimeAdversary();
-            if (this.scoreAmount >= 0 && livingEntity != null) {
-                livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
-            }
 
-            if (this.isSleeping()) {
-                this.wakeUp();
-            }
-
-
-            this.dead = true;
-            this.getDamageTracker().update();
-            if (this.world instanceof ServerWorld) {
-                if (entity != null) {
-                    entity.onKilledOther((ServerWorld)this.world, this);
-                }
-
-                this.drop(source);
-                this.onKilledBy(livingEntity);
-            }
-
-            this.world.sendEntityStatus(this, (byte)3);
-            this.setPose(EntityPose.DYING);
-        }
-    }
-*/
 
     @Override
     public boolean damage(DamageSource source, float amount) {
@@ -66,30 +37,7 @@ public class FireZombieEntity extends ZombieEntity {
         }
         return super.damage(source, amount);
     }
-/*
-    public ItemEntity dropStack() {
-        // make a stack of 1 fire pearl item
-        ItemStack firePearlStack = new ItemStack(ModItems.FIRE_PEARL, 1);
-        return super.dropStack(firePearlStack, 0);
-    }
-*/
-/*
-    @Nullable
-    @Override
-    protected void drop(DamageSource source) {
-        boolean bl;
-        Entity entity = source.getAttacker();
-        int i = entity instanceof PlayerEntity ? EnchantmentHelper.getLooting((LivingEntity)entity) : 0;
-        boolean bl2 = bl = this.playerHitTimer > 0;
-        if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-            this.dropStack();
-            System.out.println("DROPPPPPPPED");
-            this.dropEquipment(source, i, bl);
-        }
-        this.dropInventory();
-        this.dropXp();
-    }
-*/
+
     @Override
     public void onAttacking(Entity target) {
         if (target != null) {
@@ -119,7 +67,9 @@ public class FireZombieEntity extends ZombieEntity {
     }
 
     public static DefaultAttributeContainer.Builder setAttributes(){
-        return ZombieEntity.createZombieAttributes();
+        return ZombieEntity.createZombieAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.5D);
     }
 
 

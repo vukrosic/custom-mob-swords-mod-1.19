@@ -18,7 +18,6 @@ public class FireZombieFlintAndSteel extends FlintAndSteelItem {
     }
 
 
-    // if this flint and steel is used on a zombie, it will turn into a fire zombie
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {

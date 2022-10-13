@@ -10,22 +10,35 @@ import net.minecraft.util.registry.Registry;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 import net.vukrosic.custommobswordsmod.entity.custom.*;
 import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ButcherBoyEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ButcherCowSpawnEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ExplosiveCowEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.*;
 import net.vukrosic.custommobswordsmod.entity.custom.corruptedallay.CorruptedAllayVexEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
-import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueEntity;
-import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueProjectileEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 
 public class ModEntities {
-/*
-    public static final EntityType<ChunkenLaserEntityGL> CHUNKEN_LASERGL = Registry.register(
-            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "chunken_laser"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ChunkenLaserEntityGL::new)
+
+    public static final EntityType<ButcherCowSpawnEntity> BUTCHER_COW_SPAWN_ENTITY = Registry.register(
+            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "butcher_cow_spawn_entity"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ButcherCowSpawnEntity::new)
+                    .dimensions(EntityDimensions.fixed(2, 1))
+                    .build());
+    public static final EntityType<NateDimSpiderEntity> NATE_DIM_SPIDER = Registry.register(
+            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "nate_dim_spider"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, NateDimSpiderEntity::new)
                     // give it chicken dimensions
-                    .dimensions(EntityDimensions.fixed(1, 0.1F))
-                    .build());*/
+                    .dimensions(EntityDimensions.fixed(1, 2))
+                    .build());
+    public static final EntityType<ShieldingShulkerEntityGL> SHIELDING_SHULKERGL = Registry.register(
+            Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "shielding_shulker_gl"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ShieldingShulkerEntityGL::new)
+                    // give it chicken dimensions
+                    .dimensions(EntityDimensions.fixed(1, 2))
+                    .build());
 
     public static final EntityType<SummonerEntityGL> SUMMONER = Registry.register(
             Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "summoner"),
@@ -60,11 +73,12 @@ public class ModEntities {
                     // give it chicken dimensions
                     .dimensions(EntityDimensions.fixed(3F, 3F))
                     .build());*/
+    /*
     public static final EntityType<HunterEggEntity> HUNTER_EGG = Registry.register(
             Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "hunter_egg"),
             FabricEntityTypeBuilder.create(SpawnGroup.MISC, HunterEggEntity::new)
                     .dimensions(EntityDimensions.fixed(0.5F, 0.5F))
-                    .build());
+                    .build());*/
     public static final EntityType<ChunkenRocketEntity> CHUNKEN_ROCKET = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "chunken_rocket"),
         FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ChunkenRocketEntity::new)

@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "minecraft:item/flint_and_steel"
+    "layer0": "custommobswordsmod:item/fire_zombie_flint_and_steel"
   }
 }

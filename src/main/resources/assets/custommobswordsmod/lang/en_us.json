@@ -51,5 +51,9 @@
   "effect.custommobswordsmod.chicken": "C H I C C",
 
   "key.category.custommobswordsmod.custommobs": "Custom Mobs Keys",
-  "key.custommobswordsmod.shoot_tongue": "Shoot Tongue Key"
+  "key.custommobswordsmod.shoot_tongue": "Shoot Tongue Key",
+
+  "item.minecraft.potion.effect.fire_enderman_potion": "Fire Enderman Potion",
+  "item.minecraft.splash_potion.effect.fire_enderman_potion": "Splash Potion of Fire Enderman",
+  "item.minecraft.lingering_potion.effect.fire_enderman_potion": "Lingering Potion of Fire Enderman"
 }

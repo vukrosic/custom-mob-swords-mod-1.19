@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
@@ -29,6 +30,8 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
+import java.util.Random;
+
 
 public class SummonerEntityGL extends PassiveEntity implements IAnimatable {
 
@@ -36,6 +39,8 @@ public class SummonerEntityGL extends PassiveEntity implements IAnimatable {
     private AnimationFactory factory = new AnimationFactory(this);
     int playerEatingTimer = 0;
 
+    public int particleCountdown, maxParticleCountodown = 40;
+    public boolean enableParticleCountdown = false;
 
 
     public SummonerEntityGL(EntityType<? extends PassiveEntity> entityType, World world) {
@@ -100,7 +105,6 @@ public class SummonerEntityGL extends PassiveEntity implements IAnimatable {
     private PlayState attackPredicate(AnimationEvent event) {
         MinecraftClient client = MinecraftClient.getInstance();
         if(this.handSwinging && event.getController().getAnimationState().equals(AnimationState.Stopped)) {
-            client.player.sendMessage(Text.of("this.handSwinging at the top: " + this.handSwinging), false);
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.geometry.pigzombie.summon", false));
             event.getController().setAnimationSpeed(1);
@@ -143,6 +147,22 @@ public class SummonerEntityGL extends PassiveEntity implements IAnimatable {
 
     @Override
     public void tick() {
+        if(enableParticleCountdown){
+            if(particleCountdown > 0){
+                particleCountdown--;
+            }else{
+                enableParticleCountdown = false;
+                particleCountdown = maxParticleCountodown;
+                ServerWorld serverWorld = (ServerWorld) this.world;
+                for (int i = 0; i < 50; i++) {
+                    Random rand = new Random();
+                    double x = this.getX() + (rand.nextDouble() - 0.5) * 2;
+                    double y = this.getY() + (rand.nextDouble() - 0.5) * 2;
+                    double z = this.getZ() + (rand.nextDouble() - 0.5) * 2;
+                    serverWorld.spawnParticles(ParticleTypes.WITCH, x, y + 1, z, 1, 0, 0, 0, 1);
+                }
+            }
+        }
         // get player model and make it invisible
         // disable collisions with controllingPlayer
         // disable collisions with other entities

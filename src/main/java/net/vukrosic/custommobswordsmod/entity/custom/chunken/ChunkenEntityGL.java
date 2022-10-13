@@ -3,31 +3,32 @@ package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
+import net.vukrosic.custommobswordsmod.entity.custom.HunterEggEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
-import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingTongueProjectileEntity;
+import net.vukrosic.custommobswordsmod.item.ModItems;
+import net.vukrosic.custommobswordsmod.item.custom.HunterEggItem;
+import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.example.entity.RocketProjectile;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -36,6 +37,9 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 
 public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
@@ -63,20 +67,20 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
             if(poopEggTimer <= 0){
                 hasEggToPoop = false;
                 poopEggTimer = 40;
-                HunterEggEntity egg = new HunterEggEntity(ModEntities.HUNTER_EGG, world);
-                egg.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
-                world.spawnEntity(egg);
+                // drop item
+                this.dropItem(ModItems.HUNTER_EGG_ITEM);
             }
         }
 
-        if(getTarget() == null) {
-            setTarget(world.getClosestPlayer(this, 40));
-        }
-        if(ChunkenPhaseManager.chunkenPhase == 3) {
-            // if distance to target is 2 blocks
-            if(this.getTarget() != null && this.getTarget() instanceof PlayerEntity){
-                PlayerEntity player = (PlayerEntity) this.getTarget();
+        if(getTarget() == null && SetHunterCommand.hunters.size() > 0){
+            ArrayList<Float> distances = new ArrayList<>();
+            for(PlayerEntity hunter : SetHunterCommand.hunters){
+                float distance = this.distanceTo(hunter);
+                distances.add(distance);
             }
+            // get index of closest hunter
+            int index = distances.indexOf(distances.stream().min(Float::compare).get());
+            setTarget(SetHunterCommand.hunters.get(index));
         }
         if(ChunkenPhaseManager.chunkenPhase == 4) {
             attackTimer--;
@@ -94,10 +98,28 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        if(!(target instanceof PlayerEntity)) {
-            return;
+        if(target != null && target instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) target;
+            if(SetHunterCommand.pray.getUuid() == player.getUuid()) {
+                return;
+            }
         }
-        super.setTarget(target);
+        if(ChunkenPhaseManager.chunkenPhase == 3) {
+            for(PlayerEntity player : world.getPlayers()) {
+                if(player.getName().getString() == "Goldactual") {
+                    super.setTarget(player);
+                }
+            }
+        }
+        else {
+            if (target instanceof PlayerEntity) {
+                super.setTarget(target);
+            } else {
+                // get closest player
+                PlayerEntity closestPlayer = world.getClosestPlayer(this, 40);
+                super.setTarget(closestPlayer);
+            }
+        }
     }
 
     @Override
@@ -196,6 +218,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
         player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/execute in custommobswordsmod:chickendim run teleport ~ 160 ~");
         ChunkenPhaseManager.eatenPlayer = (PlayerEntity) player;
         ((PlayerEntityExt)player).setInChickenDimention(true);
+        ((PlayerEntityExt)player).setChickenEffect(true);
         ChunkenPhaseManager.eatenPlayer = (PlayerEntity) player;
 
         hasEggToPoop = true;

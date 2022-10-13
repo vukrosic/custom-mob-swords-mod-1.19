@@ -6,6 +6,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -41,18 +42,7 @@ public class CorruptedAllayVexEntityGL extends VexEntity implements IAnimatable 
         }
     }
 
-/*
-    @Override
-    protected void initGoals() {
 
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(4, new MeleeAttackGoal(this, 2.2D, false));
-        this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
-        this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
-        this.targetSelector.add(1, (new RevengeGoal(this, new Class[]{RaiderEntity.class})).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new TrackOwnerTargetGoal(this));
-        this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, true));
-    }*/
 
     @Override
     public void tick() {
@@ -173,9 +163,13 @@ public class CorruptedAllayVexEntityGL extends VexEntity implements IAnimatable 
 
     public static DefaultAttributeContainer.Builder setAttributes() {
         return VexEntity.createVexAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 2000.0D);
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 60)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12);
     }
 
+    @Override
+    public void onDeath(DamageSource damageSource) {
 
-
+        super.onDeath(damageSource);
+    }
 }

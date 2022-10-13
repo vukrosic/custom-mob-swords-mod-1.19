@@ -7,6 +7,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityRemoval;
 
 public class ControlSummonerCommand {
     public static void register(CommandDispatcher<ServerCommandSource> serverCommandSourceCommandDispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
@@ -18,6 +19,10 @@ public class ControlSummonerCommand {
                 .then(CommandManager.literal("deactivate")
                         .executes((context) -> {
                             return deactivateSummoner((ServerCommandSource)context.getSource()/*, EntityArgumentType.getEntities(context, "targets")*/);
+                        }))
+                .then(CommandManager.literal("clearAll")
+                        .executes((context) -> {
+                            return clearAll((ServerCommandSource)context.getSource()/*, EntityArgumentType.getEntities(context, "targets")*/);
                         })));
 
     }
@@ -33,6 +38,7 @@ public class ControlSummonerCommand {
         summonerEntityGL.controllingPlayer = source.getPlayer();
         ((PlayerEntityExt)source.getPlayer()).setSummonerEntityGL(summonerEntityGL);
         source.getWorld().spawnEntity(summonerEntityGL);
+        SummonerEntityRemoval.addSummoner(summonerEntityGL);
         return 1;
     }
 
@@ -42,6 +48,11 @@ public class ControlSummonerCommand {
         ((PlayerEntityExt)source.getPlayer()).setSummonerEntityGL(null);
         summonerEntityGL.controllingPlayer = null;
         summonerEntityGL.discard();
+        return 1;
+    }
+
+    private static int clearAll(ServerCommandSource source) {
+        SummonerEntityRemoval.clear();
         return 1;
     }
 }

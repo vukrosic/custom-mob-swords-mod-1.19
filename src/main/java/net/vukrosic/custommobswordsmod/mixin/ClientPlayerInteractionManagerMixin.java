@@ -6,10 +6,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -17,10 +21,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
+import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Random;
 
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayerInteractionManager.class)
@@ -29,23 +37,33 @@ public class ClientPlayerInteractionManagerMixin {
     @Inject(method = "breakBlock", at = @At("HEAD"), cancellable = true)
     public void breakBlock(BlockPos pos, CallbackInfoReturnable info) {
         PlayerEntity player = MinecraftClient.getInstance().player;
+        MinecraftServer server = MinecraftClient.getInstance().getServer();
+        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) server.getPlayerManager().getPlayer(player.getUuid());
         MinecraftClient client = MinecraftClient.getInstance();
-        if(((PlayerEntityExt)player).hasChickenEffect()){
-            player.sendMessage(Text.of("Sound and particles should play"), false);
+        if(((PlayerEntityExt)serverPlayer).hasChickenEffect()){
             client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_CHICKEN_AMBIENT, 1.0F, 15.0F));
-            if(!player.world.isClient){
-                player.world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 10.0F, 1.0F);
-            }else
-                MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_CHICKEN_AMBIENT, 1.0F));
             player.world.playSound(player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 10.0F, 1.0F, false);
             player.world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 5.0F, 1.0F + (player.world.random.nextFloat() - player.world.random.nextFloat()) * 0.2F);
 
-            // spawn particles
-            for(int i = 0; i < 10; i++){
-                player.world.addParticle(ParticleTypes.CRIT, pos.getX(), pos.getY(), pos.getZ(), 0.0D, 0.0D, 0.0D);
-                player.world.addParticle(ParticleTypes.CRIT, pos.getX(), pos.getY(), pos.getZ(), 1.0D, 1.0D, 1.0D);
-            }
+        }
+    }
 
+    @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
+    public void attackEntity(PlayerEntity player, Entity target, CallbackInfo ci) {
+        MinecraftServer server = MinecraftClient.getInstance().getServer();
+        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) server.getPlayerManager().getPlayer(player.getUuid());
+        MinecraftClient client = MinecraftClient.getInstance();
+        if(((PlayerEntityExt)serverPlayer).hasChickenEffect()){
+            client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_CHICKEN_AMBIENT, 1.0F, 15.0F));
+            player.world.playSound(player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 10.0F, 1.0F, false);
+            player.world.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_CHICKEN_AMBIENT, SoundCategory.PLAYERS, 5.0F, 1.0F + (player.world.random.nextFloat() - player.world.random.nextFloat()) * 0.2F);
+            for (int i = 0; i < 50; i++) {
+                Random rand = new Random();
+                double x = target.getX() + (rand.nextDouble() - 0.5) * 2;
+                double y = target.getY() + (rand.nextDouble() - 0.5) * 2;
+                double z = target.getZ() + (rand.nextDouble() - 0.5) * 2;
+                player.world.addParticle(ModParticles.FEATHER_PARTICLE, x, y, z, 0.0D, 0.0D, 0.0D);
+            }
         }
     }
 

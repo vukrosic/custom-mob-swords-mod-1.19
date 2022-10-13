@@ -7,7 +7,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 
 public class RobotChickenParticle extends SpriteBillboardParticle {
-    protected RobotChickenParticle(ClientWorld level, double xCoord, double yCoord, double zCoord,
+    public RobotChickenParticle(ClientWorld level, double xCoord, double yCoord, double zCoord,
                                    SpriteProvider spriteSet, double xd, double yd, double zd) {
         super(level, xCoord, yCoord, zCoord, xd, yd, zd);
 

@@ -72,7 +72,6 @@ public class CarbonPoisoningEffect extends StatusEffect {
 
                 int x = (int) (Math.random() * 20) - 10;
                 int z = (int) (Math.random() * 20) - 10;
-                player.sendMessage(Text.of("generated x: " + x + " z: " + z), false);
                 //spawnAt(player, player.getX() + x, player.getY(), player.getZ() + z);
                 if((x > 4 || x < -4) && (z > 4 || z < -4)) {
                     teleportTo(player, player.getX() + x, player.getY(), player.getZ() + z);
@@ -154,10 +153,9 @@ public class CarbonPoisoningEffect extends StatusEffect {
     }
 
     public boolean spawnWardenAt(double x, double y, double z, boolean particleEffects, PlayerEntity player) {
-        player.sendMessage(Text.of("spawn warden " + x), false);
         BlinkingWardenEntity warden = new BlinkingWardenEntity(ModEntities.BLINKING_WARDEN, player.world);
-        warden.refreshPositionAndAngles(x, y, z, 0, 0);
-        warden.setPosition(x, y, z);
+        warden.refreshPositionAndAngles(x, y+1, z, 0, 0);
+        warden.setPosition(x, y+1, z);
         player.world.spawnEntity(warden);
         blinkingWardenEntities.add(warden);
         return true;

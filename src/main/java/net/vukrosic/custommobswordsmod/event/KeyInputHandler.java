@@ -2,6 +2,7 @@ package net.vukrosic.custommobswordsmod.event;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.LivingEntity;
@@ -12,12 +13,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 //import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
+import net.vukrosic.custommobswordsmod.entity.custom.frogking.EatenMobsByFrogKing;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 import net.vukrosic.custommobswordsmod.screen.BlackScreen;
@@ -43,42 +46,53 @@ public class KeyInputHandler {
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (shootTongue.wasPressed()) {
-                ServerWorld serverWorld = client.getServer().getWorld(client.player.world.getRegistryKey());
-                PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
+                if(client.player.getVehicle() != null) {
 
-                float raycastDistance = 500;
+                    ServerWorld serverWorld = client.getServer().getWorld(client.player.world.getRegistryKey());
+                    PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
 
-                Vec3d cameraPos = player.getCameraPosVec(0);
-                Vec3d cameraDirection = client.cameraEntity.getRotationVec(0);
-                Vec3d vec3d3 = cameraPos.add(cameraDirection.multiply(raycastDistance));
-                Box box = player
-                        .getBoundingBox()
-                        .stretch(player.getRotationVec(1.0F).multiply(raycastDistance))
-                        .expand(1.0D, 1.0D, 1.0D);
+                    float raycastDistance = 500;
 
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(
-                        player,
-                        cameraPos,
-                        vec3d3,
-                        box,
-                        (entityx) -> !entityx.isSpectator(),
-                        raycastDistance
-                );
-                FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
-                frogKingEntity.swingHand(Hand.MAIN_HAND);
+                    Vec3d cameraPos = player.getCameraPosVec(0);
+                    Vec3d cameraDirection = client.cameraEntity.getRotationVec(0);
+                    Vec3d vec3d3 = cameraPos.add(cameraDirection.multiply(raycastDistance));
+                    Box box = player
+                            .getBoundingBox()
+                            .stretch(player.getRotationVec(1.0F).multiply(raycastDistance))
+                            .expand(100.0D, 100.0D, 100.0D);
 
-                if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
-                    if(player.getVehicle() != null && player.getVehicle() instanceof FrogKingEntity){
-                        //FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
-                        //frogKingEntity.swingHand(Hand.MAIN_HAND);
-                        //frogKingEntity.tryAttack(entityHitResult.getEntity());
+                    EntityHitResult entityHitResult = ProjectileUtil.raycast(
+                            player,
+                            cameraPos,
+                            vec3d3,
+                            box,
+                            (entityx) -> !entityx.isSpectator(),
+                            raycastDistance
+                    );
+/*
+                    HitResult hitResult = ProjectileUtil.raycast(
+                            player,
+                            cameraPos,
+                            vec3d3,
+                            box,
+                            (entityx) -> !entityx.isSpectator(),
+                            raycastDistance
+                    );
+                    // cast a 10x10x10 box and see if there is an entity in it
+                    if(hitResult != null)
+                        serverWorld.setBlockState(new BlockPos(hitResult.getPos()), Blocks.DIAMOND_BLOCK.getDefaultState());
+*/
+                    FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
+                    frogKingEntity.swingHand(Hand.MAIN_HAND);
 
-                        frogKingEntity.EatingEntity = (LivingEntity) entityHitResult.getEntity();
-                        frogKingEntity.MobPullCounter = frogKingEntity.MobPullMaxCounter;
+                    if (entityHitResult != null && entityHitResult.getEntity() instanceof LivingEntity) {
+                        if (player.getVehicle() != null && player.getVehicle() instanceof FrogKingEntity) {
+                            frogKingEntity.EatingEntity = (LivingEntity) entityHitResult.getEntity();
+                            frogKingEntity.MobPullCounter = frogKingEntity.MobPullMaxCounter;
+                        }
                     }
-
                 }
-                }
+            }
 
             if(blackScreen.wasPressed()){
                 //client.setScreen(new BlackScreen(new BlackScreenHandler(0, client.player.getInventory()), client.player.getInventory(), Text.of("")));
@@ -94,7 +108,11 @@ public class KeyInputHandler {
                 // get if player is mounted
                 if(client.player.getVehicle() != null && client.player.getVehicle() instanceof FrogKingEntity){
                     FrogKingEntity frogKingEntity = (FrogKingEntity) client.player.getVehicle();
-                    frogKingEntity.ShootEatenEntity();
+                    //frogKingEntity.ShootEatenEntity();
+                    ServerWorld serverWorld = client.getServer().getWorld(client.player.world.getRegistryKey());
+                    PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
+                    EatenMobsByFrogKing.ShootMob(player);
+                    // get server player
                 }
             }
 
@@ -103,6 +121,8 @@ public class KeyInputHandler {
                 PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
                 if(((PlayerEntityExt)player).getSummonerEntityGL() != null){
                     ((PlayerEntityExt)player).getSummonerEntityGL().swingHand(Hand.MAIN_HAND);
+                    ((PlayerEntityExt)player).getSummonerEntityGL().enableParticleCountdown = true;
+
                 }
                 //get all entities of type SummonerEntityGL
                 /*

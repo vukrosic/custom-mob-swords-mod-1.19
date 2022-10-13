@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.entity.custom;
+package net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

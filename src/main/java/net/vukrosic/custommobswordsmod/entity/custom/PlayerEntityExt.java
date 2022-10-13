@@ -1,16 +1,23 @@
 package net.vukrosic.custommobswordsmod.entity.custom;
 
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
+import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 
 public interface PlayerEntityExt {
-
+/*
     SummonerEntityGL summonerEntityGL = null;
     boolean fireInfected = false;
     FrogKingEntity kingFrogEntity = null;
     ShieldingShulkerEntity shieldingShulkerEntity = null;
-    public boolean hasChickenEffect = true;
+    public boolean hasChickenEffect = false;
     boolean isInChickenDimention = false;
+*/
+
+    boolean hasCombusometerEffect();
+    void setCombusometerEffect(boolean hasCombusometerEffect);
+
+    void addCombustomenter();
 
     void setSummonerEntityGL(SummonerEntityGL summonerEntityGL);
     SummonerEntityGL getSummonerEntityGL();
@@ -27,6 +34,10 @@ public interface PlayerEntityExt {
     FrogKingEntity getFrogKingEntity();
 
     boolean hasChickenEffect();
+    void setChickenEffect(boolean hasChickenEffect);
+
+    boolean fireEndermenEnabled();
+    void setFireEndermenEnabled(boolean fireEndermenEnabled);
 
 
     void setFireInfected(boolean fireInfected);

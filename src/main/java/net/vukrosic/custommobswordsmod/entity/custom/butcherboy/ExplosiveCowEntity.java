@@ -1,4 +1,4 @@
-package net.vukrosic.custommobswordsmod.entity.custom;
+package net.vukrosic.custommobswordsmod.entity.custom.butcherboy;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;

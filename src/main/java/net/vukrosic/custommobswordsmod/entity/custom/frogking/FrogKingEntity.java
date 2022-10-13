@@ -1,6 +1,7 @@
 package net.vukrosic.custommobswordsmod.entity.custom.frogking;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.FrogEntity;
+import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 import net.minecraft.sound.SoundEvent;
@@ -80,31 +82,37 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
         if(EatingEntity != null && MobPullCounter > 0) {
             MobPullCounter--;
-            if (MobPullCounter == 0) {
+            if (MobPullCounter <= 0) {
                 Vec3d entityPos = EatingEntity.getPos();
                 Vec3d playerPos = this.getPos();
                 Vec3d direction = playerPos.subtract(entityPos).normalize();
                 EatingEntity.setVelocity(direction.multiply(10));
-                EatingEntity = null;
+                //EatingEntity = null;
             }
         }
         // check distance to EatingEntity
-        float distance = 0;
-        if(EatingEntity != null){
-            distance = EatingEntity.distanceTo(this);
-            if(distance > 2){
-                if(EatingEntity instanceof PlayerEntity){
-                    PlayerEntity playerEntity = (PlayerEntity) EatingEntity;
-                    EatenMobsByFrogKing.EatenPlayers.add(playerEntity);
-                    ((PlayerEntity)getMainPassenger()).sendMessage(Text.of("EATEN PLAYER"), false);
-                }
-                else{
-                    EatenMobsByFrogKing.EatenLivingEntities.add((LivingEntity) EatingEntity);
-                    ((PlayerEntity)getMainPassenger()).sendMessage(Text.of("EATEN MOB"), false);
-                    //                                                                                                  <============= discards the mob
-                    EatingEntity.discard();
-                }
+        if(!this.world.isClient()) {
+            float distance = 0;
+            if (EatingEntity != null) {
+                distance = EatingEntity.distanceTo(this);
+                if (distance < 2) {
+                    if (EatingEntity instanceof PlayerEntity) {
+                        PlayerEntity playerEntity = (PlayerEntity) EatingEntity;
+                        EatenMobsByFrogKing.EatenPlayers.add(playerEntity);
+                        if(getMainPassenger() != null) {
+                            ((PlayerEntity) getMainPassenger()).sendMessage(Text.of("EATEN PLAYER"), false);
+                        }
+                    } else {
+                        EatenMobsByFrogKing.EatenLivingEntities.add((LivingEntity) EatingEntity);
+                        if(getMainPassenger() != null) {
+                            ((PlayerEntity) getMainPassenger()).sendMessage(Text.of("EATEN MOB"), false);
+                            ((PlayerEntity) getMainPassenger()).sendMessage(Text.of("EatenMobsByFrogKing.EatenLivingEntities.size " + EatenMobsByFrogKing.EatenLivingEntities.size()), false);
+                        }
+                        //                                                                                                  <============= discards the mob
+                        //EatingEntity.discard();
+                    }
 
+                }
             }
         }
         super.tick();
@@ -112,20 +120,30 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     
     
     public void ShootEatenEntity(){
-        if(EatenMobsByFrogKing.EatenLivingEntities.size() > 0){
-            this.getMainPassenger().sendMessage(Text.of("SHOOTING EATEN MOB"));
-            LivingEntity entity = EatenMobsByFrogKing.EatenLivingEntities.get(0);
-            EatenMobsByFrogKing.EatenLivingEntities.remove(0);
-            entity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
-            // set velocity forward from frog
-            Vec3d entityPos = entity.getPos();
-            // get where frog is looking at
-            Vec3d lookRotation = this.getRotationVec(1);
-            // caculate direction
-            Vec3d direction = lookRotation.subtract(entityPos).normalize();
-            // set velocity
-            entity.setVelocity(direction.multiply(20));
-
+        if(getMainPassenger() != null) {
+            ((PlayerEntity) this.getMainPassenger()).sendMessage(Text.of("size(): " + EatenMobsByFrogKing.EatenLivingEntities.size()), false);
+        }
+        if(!this.world.isClient() && EatenMobsByFrogKing.EatenLivingEntities.size() > 0){
+            if(getMainPassenger() != null) {
+                this.getMainPassenger().sendMessage(Text.of("SHOOTING EATEN MOB"));
+            }
+            if(EatenMobsByFrogKing.EatenLivingEntities.size() > 0 && getMainPassenger() != null && getMainPassenger() instanceof PlayerEntity) {
+                PlayerEntity playerEntity = (PlayerEntity) getMainPassenger();
+                LivingEntity entity = EatenMobsByFrogKing.EatenLivingEntities.get(0);
+                //EatenMobsByFrogKing.EatenLivingEntities.remove(0);
+                entity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+                // set velocity forward from frog
+                Vec3d entityPos = entity.getPos();
+                // get where frog is looking at
+                Vec3d lookRotation = this.getMainPassenger().getRotationVector();
+                Vec3d cameraPos = playerEntity.getCameraPosVec(0);
+                // get what player's cross is pointing to
+                Vec3d crossPos = cameraPos.add(lookRotation.multiply(100));
+                // get direction from frog to cross
+                Vec3d direction = crossPos.subtract(entityPos).normalize();
+                entity.setVelocity(direction.multiply(7));
+                EatenMobsByFrogKing.EatenLivingEntities.remove(0);
+            }
         }
     }
     
@@ -311,9 +329,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
         return FrogEntity.createFrogAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 200.0D);
     }
-    /*public static DefaultAttributeContainer.Builder setAttributes() {
-        return ChickenEntity.createChickenAttributes();
-    }*/
+
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         if (event.isMoving()) {
@@ -342,21 +358,21 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_DOLPHIN_AMBIENT;
+        return SoundEvents.ENTITY_FROG_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_CHICKEN_HURT;
+        return SoundEvents.ENTITY_FROG_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_CHICKEN_DEATH;
+        return SoundEvents.ENTITY_FROG_DEATH;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15f, 1.0f);
+        this.playSound(SoundEvents.ENTITY_FROG_STEP, 0.15f, 1.0f);
     }
 }

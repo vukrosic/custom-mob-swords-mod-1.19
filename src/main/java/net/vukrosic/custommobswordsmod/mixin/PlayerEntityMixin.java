@@ -1,22 +1,28 @@
 package net.vukrosic.custommobswordsmod.mixin;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.AllayEntity;
+import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -26,8 +32,10 @@ import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.EnderZoglinEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
-import net.vukrosic.custommobswordsmod.entity.custom.ShieldingShulkerEntity;
-import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
+import net.vukrosic.custommobswordsmod.entity.custom.corruptedallay.CorruptedAllayVexEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.CombustometerManager;
+import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.HungerManagerExt;
+import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.SpittingChickenEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
@@ -44,19 +52,36 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Random;
+
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityExt {
+
+    // get player's dimension
 
     FrogKingEntity frogKingEntity;
     ShieldingShulkerEntity shieldingShulkerEntity;
     ServerBossBar serverBossBar;
+    
+    boolean hasCombusometerEffect = false;
+    ServerBossBar combustometerBossBar;
+    float combustometerBossBarProgress = 0;
     public float BeamProgress = 0;
 
     int ShieldingShulkerShield = 0;
 
+    boolean isInNateDimention = false;
+    int NateDimentionTimer = 200;
+
     boolean isInChickenDimention = false;
     public boolean hasChickenEffect = false;
     public SummonerEntityGL summonerEntityGL = null;
+
+    public boolean fireEndermenEnabled = false;
+
+    int allayRespawnTimer, allayMaxRespawnTimer = 100;
+    boolean hasAllayHelmet = false;
+    boolean allayRespawn = true;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -77,9 +102,34 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     boolean fireInfected = false;
 
+
+    public void setCombusometerEffect(boolean hasCombusometerEffect){
+        if(hasCombusometerEffect)
+        CombustometerManager.AddPlayer((PlayerEntity)(Object)this);
+        else CombustometerManager.RemovePlayer((PlayerEntity)(Object)this);
+        this.hasCombusometerEffect = hasCombusometerEffect;
+        addCombustomenter();
+    }
+
+    public boolean hasCombusometerEffect(){
+        return hasCombusometerEffect;
+    }
+
     public boolean hasChickenEffect(){
         return hasChickenEffect;
     };
+
+    public boolean fireEndermenEnabled(){
+        return this.fireEndermenEnabled;
+    };
+    public void setFireEndermenEnabled(boolean fireEndermenEnabled){
+        sendMessage(Text.of("Fire Endermen ENABLED IN PLAYERMIXIN "), false);
+        this.fireEndermenEnabled = fireEndermenEnabled;
+    };
+
+    public void setChickenEffect(boolean hasChickenEffect){
+        this.hasChickenEffect = hasChickenEffect;
+    }
     @Override
     public void setFireInfected(boolean fireInfected) {
 
@@ -134,22 +184,71 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
-
-
-
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick (CallbackInfo info) {
         if (!world.isClient) {
+            if (hasAllayHelmet && allayRespawn) {
+                //respawn allay
+                if (allayRespawnTimer > 0) {
+                    allayRespawnTimer--;
+                    if (allayRespawnTimer <= 0) {
+                        CorruptedAllayVexEntityGL corruptedAllayVexEntityGL = new CorruptedAllayVexEntityGL(EntityType.VEX, world);
+                        corruptedAllayVexEntityGL.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+                        world.spawnEntity(corruptedAllayVexEntityGL);
+                        allayRespawnTimer = allayMaxRespawnTimer;
+                    }
+                }
+            }
+
+            if (isInNateDimention) {
+                if (NateDimentionTimer > 0) {
+                    NateDimentionTimer--;
+                } else {
+                    for (int i = 0; i < 2; i++) {
+                        // apply statuf effect darkness
+                        this.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0, false, false, true));
+                        PandaEntity panda = new PandaEntity(EntityType.PANDA, world);
+                        double x = this.getPos().x + (Math.random() * 60) - 30;
+                        double z = this.getPos().z + (Math.random() * 60) - 30;
+                        // random yaw between 0 and 360
+                        float yawC = (float) (Math.random() * 360);
+                        // random pitch between -90 and 90
+                        float pitchC = (float) ((Math.random() * 180) - 90);
+                        panda.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
+                        world.spawnEntity(panda);
+                    }
+                }
+
+            }
+
+
+            if (CombustometerManager.players.contains((PlayerEntity) (Object) this)) {
+                // get hunger manager
+                HungerManager hungerManager = getHungerManager();
+                hungerManager.getFoodLevel();
+                if (hungerManager.getFoodLevel() == 20) {
+                    //this.sendMessage(Text.of("combustometerBossBarProgress: " + combustometerBossBarProgress), false);
+                    if (combustometerBossBarProgress < 1) {
+                        combustometerBossBarProgress += 0.002;
+                        combustometerBossBar.setPercent(combustometerBossBarProgress);
+                    } else {
+                        // set randomly on fire
+                        Random random = new Random();
+                        int randomInt = random.nextInt(2400);
+                        if (randomInt < 3) {
+                            // set on fire
+                            this.setOnFireFor(5);
+                        }
+                    }
+                }
+            }
             // check if chicken dimension every 20th tick
 
             if (world.getRegistryKey() == ModDimensions.CHICKENDIM_DIMENSION_KEY) {
                 double y = this.getPos().y;
-                System.out.println("y = " + y);
-                System.out.println("y < (-100) = " + (y < (-100)));
-                if(y < (-100)){
-                    System.out.println("Setting position");
+                if (y < (-100)) {
                     this.teleport(this.getPos().x + Math.random() * 100, 200, this.getPos().z + Math.random() * 100);
-            }
+                }
                 setInChickenDimention(true);
             } else {
                 setInChickenDimention(false);
@@ -158,7 +257,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 ///execute in minecraft:overworld teleport ~ ~ ~
 
-            if(isInChickenDimention) {
+            if (isInChickenDimention) {
                 if (Math.random() < 1) {
                     for (int i = 0; i < 2; i++) {
                         SpittingChickenEntity spittingChickenEntity = new SpittingChickenEntity(ModEntities.SPITTING_CHICKEN, world);
@@ -175,26 +274,33 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
                 }
             }
-        }
 
 
 
-
-
-
-        double randomNumber = Math.random();
-        if (randomNumber > 0.92) {
-            if (super.isOnFire()) {
-                BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
-                FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
-                fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
-                world.spawnEntity(fireEndermanEntity);
-                // set fireEndermanEntity angry at player
-                fireEndermanEntity.setTarget(this);
+            double randomNumber = Math.random();
+            if (randomNumber > 0.92) {
+                if (super.isOnFire() && fireEndermenEnabled) {
+                    BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
+                    FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
+                    fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
+                    world.spawnEntity(fireEndermanEntity);
+                    // set fireEndermanEntity angry at player
+                    fireEndermanEntity.setTarget(this);
+                }
             }
         }
     }
-//}
+
+
+
+
+
+
+// when player goes through portal
+
+
+
+
 
 
 
@@ -287,61 +393,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
-/*
-    @Overwrite
-    @Nullable
-    public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
-        if (stack.isEmpty()) {
-            return null;
-        } else {
-            if (this.world.isClient) {
-                this.swingHand(Hand.MAIN_HAND);
-            }
-
-            double d = this.getEyeY() - 0.30000001192092896;
-            ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), d, this.getZ(), stack);
-
-
-            if(FireInfectedPlayers.isPlayerInList(this.inventory.player)){
-                itemEntity.setPickupDelay(40);
-                itemEntity.setOnFireFor(500);
-                ((ItemEntityMixinExt)itemEntity).setThrownBy(this.inventory.player);
-                //((ItemEntityMixinExt)itemEntity).setBurnTimer(500);
-                if (retainOwnership) {
-                    itemEntity.setThrower(this.getUuid());
-                }
-            }
-            else {
-                itemEntity.setPickupDelay(40);
-                if (retainOwnership) {
-                    itemEntity.setThrower(this.getUuid());
-                }
-            }
-            //world.spawnEntity(itemEntity);
-
-
-
-            float f;
-            float g;
-            if (throwRandomly) {
-                f = this.random.nextFloat() * 0.5F;
-                g = this.random.nextFloat() * 6.2831855F;
-                itemEntity.setVelocity((double)(-MathHelper.sin(g) * f), 0.20000000298023224, (double)(MathHelper.cos(g) * f));
-            } else {
-                f = 0.3F;
-                g = MathHelper.sin(this.getPitch() * 0.017453292F);
-                float h = MathHelper.cos(this.getPitch() * 0.017453292F);
-                float i = MathHelper.sin(this.getYaw() * 0.017453292F);
-                float j = MathHelper.cos(this.getYaw() * 0.017453292F);
-                float k = this.random.nextFloat() * 6.2831855F;
-                float l = 0.02F * this.random.nextFloat();
-                itemEntity.setVelocity((double)(-i * h * 0.3F) + Math.cos((double)k) * (double)l, (double)(-g * 0.3F + 0.1F + (this.random.nextFloat() - this.random.nextFloat()) * 0.1F), (double)(j * h * 0.3F) + Math.sin((double)k) * (double)l);
-            }
-
-            return itemEntity;
-        }
-    }
-*/
 
     @Override
     public void onAttacking(Entity target) {
@@ -359,16 +410,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
-
-/*
-    @Inject(method = "attackLivingEntity", at = @At("HEAD"), cancellable = true)
-    protected void attackLivingEntity(LivingEntity target, CallbackInfo ci) {
-        if(target.getName() == ModEntities.ENDERZOGLIN.getName()){
-            EnderZoglinEntity enderZoglinEntity = new EnderZoglinEntity(ModEntities.ENDERZOGLIN, world);
-            enderZoglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
-            world.spawnEntity(enderZoglinEntity);
-        }
-    }*/
 
     public void SummonShieldingShulker(){
         if(!this.world.isClient() && this.getShieldingShulkerEntity() == null) {
@@ -424,16 +465,28 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             RestoreDeathCommand.saveState();
         }
     }
-/*
-    // inject into interraction with blocks
-    @Inject(method = "shouldCancelInteraction", at = @At("HEAD"), cancellable = true)
-    public void shouldCancelInteraction(CallbackInfoReturnable<Boolean> cir) {
-        if(isInChickenDimention){
-            cir.setReturnValue(true);
-            return;
+
+
+    
+    public void addCombustomenter(){
+        combustometerBossBar = new ServerBossBar(this.getDisplayName(), ServerBossBar.Color.RED, ServerBossBar.Style.PROGRESS);
+        ServerPlayerEntity player = null;
+        for(PlayerEntity playerEntity : this.world.getPlayers()){
+            if(playerEntity.getUuid() == this.getUuid()){
+                player = (ServerPlayerEntity) playerEntity;
+            }
+        }
+        if(player != null) {
+            combustometerBossBar.addPlayer(player);
+            combustometerBossBar.setPercent(combustometerBossBarProgress);
+            combustometerBossBar.setName(Text.of("combust-o-meter"));
         }
     }
-*/
+    
+    
+    
+    
+    
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     public void interact(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if(isInChickenDimention){

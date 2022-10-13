@@ -1,17 +1,13 @@
 package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class HunterEggEntity extends EggEntity {
-    public HunterEggEntity(EntityType<? extends EggEntity> entityType, World world) {
+public class HunterEggOldEntity extends EggEntity {
+    public HunterEggOldEntity(EntityType<? extends EggEntity> entityType, World world) {
         super(entityType, world);
     }
 
