@@ -2,6 +2,7 @@ package net.vukrosic.custommobswordsmod.entity.custom.frogking;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -17,8 +18,12 @@ import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
+import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -28,6 +33,7 @@ import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.item.ModItems;
+import net.vukrosic.custommobswordsmod.item.custom.FrogKingItem;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -56,30 +62,12 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     public FrogKingEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 
         super(entityType, world);
-        //tongue = new FrogKingTongueEntity(ModEntities.FROG_KING_TONGUE, world);
-        //tongue.setOwner(this);
-        //tongue.createTongueProjectile();
     }
 
 
 
-    /*
-     * TONGUE
-     */
-
-
-
-    // get mounted entity
-
-
-
-    /*
-     * TONGUE ATTACK
-     */
-
     @Override
     public void tick() {
-
         if(EatingEntity != null && MobPullCounter > 0) {
             MobPullCounter--;
             if (MobPullCounter <= 0) {
@@ -117,9 +105,17 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
         }
         super.tick();
     }
-    
-    
+
+
+    @Override
+    public boolean canWalkOnFluid(FluidState state) {
+        return state.isIn(FluidTags.LAVA);
+    }
+
     public void ShootEatenEntity(){
+        if(world.isClient()){
+            return;
+        }
         if(getMainPassenger() != null) {
             ((PlayerEntity) this.getMainPassenger()).sendMessage(Text.of("size(): " + EatenMobsByFrogKing.EatenLivingEntities.size()), false);
         }
@@ -194,6 +190,15 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
 
 
+    @Override
+    public double getJumpBoostVelocityModifier() {
+        return 1.15;
+    }
+
+    @Override
+    protected float getJumpVelocityMultiplier() {
+        return 1;
+    }
 
     /*
      * TURNING INTO ITEM
@@ -201,17 +206,17 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        } else if (!this.world.isClient && !this.isRemoved()) {
-            if(source.getAttacker() == SetHunterCommand.pray){
-                this.dropItem(ModItems.FROG_KING_ITEM);
-                this.discard();
+        if (!this.world.isClient()) {
+            if (source.getAttacker() instanceof PlayerEntity) {
+                PlayerEntity playerEntity = (PlayerEntity) source.getAttacker();
+                if (playerEntity == SetHunterCommand.pray) {
+                    this.dropItem(ModItems.FROG_KING_SPAWN_EGG);
+                    this.discard();
+                    return true;
+                }
             }
-            return true;
-        } else {
-            return true;
         }
+        return false;
     }
 
 
@@ -239,7 +244,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     }
 
 
-    private LivingEntity getMainPassenger(){
+    public LivingEntity getMainPassenger(){
         LivingEntity livingEntity = null;
         for (Entity entity : getPassengerList()){
             if (entity instanceof LivingEntity){
@@ -355,7 +360,7 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     public AnimationFactory getFactory() {
         return factory;
     }
-
+/*
     @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_FROG_AMBIENT;
@@ -374,5 +379,5 @@ public class FrogKingEntity extends FrogEntity implements IAnimatable {
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_FROG_STEP, 0.15f, 1.0f);
-    }
+    }*/
 }

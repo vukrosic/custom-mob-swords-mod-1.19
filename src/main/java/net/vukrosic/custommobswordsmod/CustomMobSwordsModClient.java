@@ -14,6 +14,7 @@ import net.vukrosic.custommobswordsmod.entity.client.frogking.FrogKingEntityRend
 import net.vukrosic.custommobswordsmod.entity.client.shieldingshulker.ShieldingShulkerEntityRendererGL;
 import net.vukrosic.custommobswordsmod.entity.client.summoner.SummonerEntityRendererGL;
 import net.vukrosic.custommobswordsmod.event.KeyInputHandler;
+import net.vukrosic.custommobswordsmod.networking.ModMessages;
 import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import net.vukrosic.custommobswordsmod.particle.custom.FeatherParticle;
 
@@ -42,6 +43,7 @@ public class CustomMobSwordsModClient implements ClientModInitializer {
 
         ParticleFactoryRegistry.getInstance().register(ModParticles.FEATHER_PARTICLE, FeatherParticle.Factory::new);
 
+        ModMessages.registerS2CPacket();
         // register HunterEggEntity renderer (ItemEntityRenderer)
         // add egg breaking particles
 

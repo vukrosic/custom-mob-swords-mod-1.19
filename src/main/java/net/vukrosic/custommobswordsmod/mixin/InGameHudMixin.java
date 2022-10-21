@@ -30,7 +30,6 @@ public abstract class InGameHudMixin extends DrawableHelper {
 
     @Inject(method = "renderHotbarItem", at = @At("HEAD"))
     private void renderHotbar(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
-
         // black screen if player is being eaten by frog
         if(GettingEatenByChunkenManager.player != null && GettingEatenByChunkenManager.player.equals(player)) {
             Screen screen = MinecraftClient.getInstance().currentScreen;

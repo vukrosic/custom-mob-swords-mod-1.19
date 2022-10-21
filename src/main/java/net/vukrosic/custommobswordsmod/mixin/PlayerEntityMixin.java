@@ -1,14 +1,10 @@
 package net.vukrosic.custommobswordsmod.mixin;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
-import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,24 +13,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.vukrosic.custommobswordsmod.command.RestoreDeathCommand;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.EnderZoglinEntityGL;
+import net.vukrosic.custommobswordsmod.entity.custom.NateDimSpiderEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.entity.custom.corruptedallay.CorruptedAllayVexEntityGL;
 import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.CombustometerManager;
-import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.HungerManagerExt;
 import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.SpittingChickenEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.fireenderman.FireEndermanEntityGL;
@@ -59,6 +52,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     // get player's dimension
 
+    
     FrogKingEntity frogKingEntity;
     ShieldingShulkerEntity shieldingShulkerEntity;
     ServerBossBar serverBossBar;
@@ -70,10 +64,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     int ShieldingShulkerShield = 0;
 
-    boolean isInNateDimention = false;
-    int NateDimentionTimer = 200;
+    public boolean isInNateDimension = false;
+    int NateDimensionTimer = 200;
 
-    boolean isInChickenDimention = false;
+    boolean isInChickenDimension = false;
     public boolean hasChickenEffect = false;
     public SummonerEntityGL summonerEntityGL = null;
 
@@ -115,6 +109,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         return hasCombusometerEffect;
     }
 
+
     public boolean hasChickenEffect(){
         return hasChickenEffect;
     };
@@ -123,7 +118,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         return this.fireEndermenEnabled;
     };
     public void setFireEndermenEnabled(boolean fireEndermenEnabled){
-        sendMessage(Text.of("Fire Endermen ENABLED IN PLAYERMIXIN "), false);
         this.fireEndermenEnabled = fireEndermenEnabled;
     };
 
@@ -136,6 +130,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         this.fireInfected = fireInfected;
     }
 
+    public void setInNateDimension(boolean isInNateDimension){
+        this.isInNateDimension = isInNateDimension;
+    }
+    public boolean isInNateDimension(){
+        return isInNateDimension;
+    }
     public void setSummonerEntityGL(SummonerEntityGL summonerEntityGL){
         this.summonerEntityGL = summonerEntityGL;
     }
@@ -152,11 +152,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             CommandManager commandManager = world.getServer().getCommandManager();
             commandManager.executeWithPrefix(world.getServer().getCommandSource(), "gamemode survival");
         }
-        this.isInChickenDimention = isInChickenDimention;
+        this.isInChickenDimension = isInChickenDimention;
     }
 
     public boolean isInChickenDimention(){
-        return isInChickenDimention;
+        return isInChickenDimension;
     }
 
     @Override
@@ -181,9 +181,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     public FrogKingEntity getFrogKingEntity() {
         return frogKingEntity;
     }
-
-
-
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick (CallbackInfo info) {
         if (!world.isClient) {
@@ -199,10 +196,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
                     }
                 }
             }
-
-            if (isInNateDimention) {
-                if (NateDimentionTimer > 0) {
-                    NateDimentionTimer--;
+            if (this.world.getRegistryKey().getValue().toString().equals("custommobswordsmod:natedim")) {
+                if (NateDimensionTimer > 0) {
+                    NateDimensionTimer--;
                 } else {
                     for (int i = 0; i < 2; i++) {
                         // apply statuf effect darkness
@@ -210,12 +206,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
                         PandaEntity panda = new PandaEntity(EntityType.PANDA, world);
                         double x = this.getPos().x + (Math.random() * 60) - 30;
                         double z = this.getPos().z + (Math.random() * 60) - 30;
-                        // random yaw between 0 and 360
                         float yawC = (float) (Math.random() * 360);
-                        // random pitch between -90 and 90
                         float pitchC = (float) ((Math.random() * 180) - 90);
                         panda.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
                         world.spawnEntity(panda);
+
+                        NateDimSpiderEntity nateDimSpiderEntity = new NateDimSpiderEntity(EntityType.SPIDER, world);
+                        nateDimSpiderEntity.refreshPositionAndAngles(x, this.getPos().y+15, z, yawC, pitchC);
+                        world.spawnEntity(nateDimSpiderEntity);
                     }
                 }
 
@@ -227,7 +225,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
                 HungerManager hungerManager = getHungerManager();
                 hungerManager.getFoodLevel();
                 if (hungerManager.getFoodLevel() == 20) {
-                    //this.sendMessage(Text.of("combustometerBossBarProgress: " + combustometerBossBarProgress), false);
                     if (combustometerBossBarProgress < 1) {
                         combustometerBossBarProgress += 0.002;
                         combustometerBossBar.setPercent(combustometerBossBarProgress);
@@ -257,7 +254,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 ///execute in minecraft:overworld teleport ~ ~ ~
 
-            if (isInChickenDimention) {
+            if (isInChickenDimension) {
                 if (Math.random() < 1) {
                     for (int i = 0; i < 2; i++) {
                         SpittingChickenEntity spittingChickenEntity = new SpittingChickenEntity(ModEntities.SPITTING_CHICKEN, world);
@@ -423,7 +420,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             shieldingShulkerEntity.owner = SetHunterCommand.pray;
         }
     }
-
+/*
     @Override
     public void setShieldingShulkerEntity(ShieldingShulkerEntity shieldingShulkerEntity) {
         serverBossBar = new ServerBossBar(this.getDisplayName(), ServerBossBar.Color.BLUE, ServerBossBar.Style.PROGRESS);
@@ -452,7 +449,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             }
         }
     }
-
+*/
 
     public void addBeamProgress(float beamProgress) {
         this.BeamProgress += beamProgress / 500;
@@ -465,6 +462,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             RestoreDeathCommand.saveState();
         }
     }
+
+
+
+
+
 
 
     
@@ -489,7 +491,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     public void interact(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if(isInChickenDimention){
+        if(isInChickenDimension){
             entity = new EnderZoglinEntityGL(ModEntities.ENDER_ZOGLIN, world);
             //cir.setReturnValue(ActionResult.FAIL);
         }
@@ -498,8 +500,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     @Override
     public void setHealth(float health) {
 
-        if(isInChickenDimention()){
-            //super.setHealth(getHealth());
+        if(isInChickenDimention() || isInNateDimension) {
+
         }
         else {
             super.setHealth(health);

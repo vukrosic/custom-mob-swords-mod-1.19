@@ -4,22 +4,22 @@
   "package": "net.vukrosic.custommobswordsmod.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "TickCounterMixin",
     "LivingEntityMixin",
     "PlayerEntityMixin",
     "IronGolemEntityMixin",
     "ItemEntityMixin",
     "EntityMixin",
-    "HandledScreenMixin",
     "WorldMixin",
     "ServerPlayerInteractionManagerMixin",
-    "InGameHudMixin",
-    "ClientPlayerInteractionManagerMixin",
-    "HungerManagerMixin",
-    "CompassAnglePredicateProviderMixin"
+    "HungerManagerMixin"
   ],
   "client": [
-    "ExampleMixin"
+    "ExampleMixin",
+    "InGameHudMixin",
+    "ClientPlayerInteractionManagerMixin",
+    "ClientWorldMixin",
+    "HandledScreenMixin",
+    "CompassAnglePredicateProviderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

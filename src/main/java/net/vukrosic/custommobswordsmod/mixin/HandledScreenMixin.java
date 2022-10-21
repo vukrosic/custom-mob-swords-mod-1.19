@@ -2,6 +2,8 @@ package net.vukrosic.custommobswordsmod.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -16,9 +18,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.util.FireInfectedPlayers;
+import net.vukrosic.custommobswordsmod.util.custom.HandledScreenExt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,9 +30,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Set;
-
+@Environment(EnvType.CLIENT)
 @Mixin(HandledScreen.class)
-public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
+public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T>, HandledScreenExt {
+
 
     protected HandledScreenMixin(Text title) {
         super(title);
@@ -43,6 +48,10 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Shadow int heldButtonType;
     @Shadow private void calculateOffset() {}
     @Shadow int backgroundWidth = 176;
+/*
+    public void setBurn(boolean burn) {
+        this.burn = burn;
+    }*/
 
 /*
     @Inject(method = "drawItem", at = @At("HEAD"), cancellable = true)
@@ -67,6 +76,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     public void drawSlot(MatrixStack matrices, Slot slot, CallbackInfo ci) {
         PlayerEntity player = this.client.player;
+
+
         if (FireInfectedPlayers.isPlayerInList(player)) {
                 int i = slot.x;
                 int j = slot.y;

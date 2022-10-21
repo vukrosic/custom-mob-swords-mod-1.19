@@ -5,6 +5,7 @@ import net.vukrosic.custommobswordsmod.block.ModBlocks;
 import net.vukrosic.custommobswordsmod.effect.ModEffects;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.item.ModItems;
+import net.vukrosic.custommobswordsmod.networking.ModMessages;
 import net.vukrosic.custommobswordsmod.painting.ModPaintings;
 import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import net.vukrosic.custommobswordsmod.potion.ModPotions;
@@ -29,6 +30,7 @@ public class CustomMobSwordsMod implements ModInitializer {
 
 		ModItems.registerModItems();
 		ModEntities.registerModEntities();
+		ModMessages.registerC2SPacket();
 		//ModVillagers.registerVillagers();
 		//ModVillagers.registerTrades();
 		ModRegistries.registerModStuffs();

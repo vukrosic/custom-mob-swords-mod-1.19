@@ -9,7 +9,7 @@ import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 
 public class ModDimensions {
 
-/*
+
     public static final RegistryKey<World> NATEDIM_DIMENSION_KEY = RegistryKey.of(Registry.WORLD_KEY,
             new Identifier(CustomMobSwordsMod.MOD_ID, "natedim"));
     public static final RegistryKey<DimensionType> NATEDIM_TYPE_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY,
@@ -24,7 +24,7 @@ public class ModDimensions {
             new Identifier(CustomMobSwordsMod.MOD_ID, "lewdim"));
     public static final RegistryKey<DimensionType> LEWDIM_TYPE_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY,
             LEWDIM_DIMENSION_KEY.getValue());
-*/
+
 
 
     public static final RegistryKey<World> CHICKENDIM_DIMENSION_KEY = RegistryKey.of(Registry.WORLD_KEY,

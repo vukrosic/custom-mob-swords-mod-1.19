@@ -1,6 +1,5 @@
 package net.vukrosic.custommobswordsmod.item;
 
-import com.github.crimsondawn45.fabricshieldlib.lib.object.FabricShieldItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
@@ -14,9 +13,6 @@ public class ModItems {
 
     public static final Item FIRE_ZOMBIE_FLINT_AND_STEEL = registerItem("fire_zombie_flint_and_steel",
             new FireZombieFlintAndSteel(new FabricItemSettings().group(ItemGroup.MISC)));
-
-    public static final Item ABSORPTION_SHIELD_ITEM = registerItem("absorption_shield_item",
-            new AbsorptionShieldItem(new FabricItemSettings().group(ItemGroup.COMBAT).maxDamage(3360), 10, 13, Items.IRON_INGOT));
 
     /*
     public static final Item ABSORPTION_SHIELD_ITEM2 = registerItem("absorption2_shield_item",

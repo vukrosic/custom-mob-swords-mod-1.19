@@ -10,9 +10,12 @@ public interface PlayerEntityExt {
     boolean fireInfected = false;
     FrogKingEntity kingFrogEntity = null;
     ShieldingShulkerEntity shieldingShulkerEntity = null;
+
     public boolean hasChickenEffect = false;
-    boolean isInChickenDimention = false;
-*/
+    boolean isInChickenDimention = false;*/
+
+    void setInNateDimension(boolean isInNateDimension);
+    boolean isInNateDimension();
 
     boolean hasCombusometerEffect();
     void setCombusometerEffect(boolean hasCombusometerEffect);

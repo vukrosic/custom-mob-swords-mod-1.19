@@ -2,6 +2,8 @@ package net.vukrosic.custommobswordsmod.event;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -9,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -23,6 +26,7 @@ import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.EatenMobsByFrogKing;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
+import net.vukrosic.custommobswordsmod.networking.ModMessages;
 import net.vukrosic.custommobswordsmod.screen.BlackScreen;
 import net.vukrosic.custommobswordsmod.screen.BlackScreenHandler;
 import org.lwjgl.glfw.GLFW;
@@ -35,6 +39,7 @@ public class KeyInputHandler {
     public static final String KEY_SHOOT_MOB = "key.custommobswordsmod.shoot_mob";
     public static final String KEY_SUMMON_SUMMONER_MOB = "key.custommobswordsmod.spawn_summoner_mob";
     public static final String KEY_ACTIVATE_CHUNKEN_4 = "key.custommobswordsmod.set_chunken_4";
+    public static final String KEY_FROG_KING_JUMP = "key.custommobswordsmod.frog_king_jump";
 
     public static KeyBinding shootTongue;
     public static KeyBinding blackScreen;
@@ -42,6 +47,7 @@ public class KeyInputHandler {
     public static KeyBinding shootMob;
     public static KeyBinding summonSummonerMob;
     public static KeyBinding setChunkenTo4;
+    public static KeyBinding frogKingJump;
 
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -69,19 +75,7 @@ public class KeyInputHandler {
                             (entityx) -> !entityx.isSpectator(),
                             raycastDistance
                     );
-/*
-                    HitResult hitResult = ProjectileUtil.raycast(
-                            player,
-                            cameraPos,
-                            vec3d3,
-                            box,
-                            (entityx) -> !entityx.isSpectator(),
-                            raycastDistance
-                    );
-                    // cast a 10x10x10 box and see if there is an entity in it
-                    if(hitResult != null)
-                        serverWorld.setBlockState(new BlockPos(hitResult.getPos()), Blocks.DIAMOND_BLOCK.getDefaultState());
-*/
+
                     FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
                     frogKingEntity.swingHand(Hand.MAIN_HAND);
 
@@ -124,16 +118,23 @@ public class KeyInputHandler {
                     ((PlayerEntityExt)player).getSummonerEntityGL().enableParticleCountdown = true;
 
                 }
-                //get all entities of type SummonerEntityGL
-                /*
-                serverWorld.getEntitiesByClass(SummonerEntityGL.class, new Box(-1,-1,-1,1,1,1), (entity) -> true).forEach(entity -> {
-                    entity.swingHand(Hand.MAIN_HAND);
-                });*/
-
             }
 
             if(setChunkenTo4.wasPressed()){
                 ChunkenPhaseManager.set4Phase();
+            }
+
+            if(frogKingJump.wasPressed()){
+
+                //client.player.getInventory().clear();
+                //client.player.getInventory().dropAll();
+
+                if(client.player.getVehicle() != null && client.player.getVehicle() instanceof FrogKingEntity) {
+                    ServerWorld serverWorld = client.getServer().getWorld(client.player.world.getRegistryKey());
+                    PlayerEntity player = serverWorld.getPlayerByUuid(client.player.getUuid());
+                    FrogKingEntity frogKingEntity = (FrogKingEntity) player.getVehicle();
+                    frogKingEntity.jump();
+                }
             }
         });
     }
@@ -183,6 +184,13 @@ public class KeyInputHandler {
                     KEY_ACTIVATE_CHUNKEN_4,
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_N,
+                    KEY_CATEGORY_CUSTOMMOBS
+            ));
+
+            frogKingJump = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                    KEY_FROG_KING_JUMP,
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_SPACE,
                     KEY_CATEGORY_CUSTOMMOBS
             ));
 

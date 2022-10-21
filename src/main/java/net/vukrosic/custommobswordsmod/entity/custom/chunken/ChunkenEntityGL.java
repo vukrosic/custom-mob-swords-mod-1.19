@@ -98,10 +98,14 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        if(target != null && target instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) target;
-            if(SetHunterCommand.pray.getUuid() == player.getUuid()) {
-                return;
+        if(ChunkenPhaseManager.chunkenPhase != 3) {
+            if (target != null && target instanceof PlayerEntity) {
+                PlayerEntity player = (PlayerEntity) target;
+                if (SetHunterCommand.pray != null) {
+                    if (SetHunterCommand.pray.getUuid() == player.getUuid()) {
+                        return;
+                    }
+                }
             }
         }
         if(ChunkenPhaseManager.chunkenPhase == 3) {

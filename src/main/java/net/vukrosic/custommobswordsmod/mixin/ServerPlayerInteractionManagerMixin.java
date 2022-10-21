@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -28,10 +29,11 @@ import java.util.Random;
 
 @Mixin(ServerPlayerInteractionManager.class)
 public class ServerPlayerInteractionManagerMixin {
+    @Shadow
+    protected ServerPlayerEntity player;
     @Inject(method = "interactBlock", at = @At("HEAD"), cancellable = true)
     private void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
-        PlayerEntity playerEntity = (PlayerEntity) player;
-        boolean isInChickenDimention = ((PlayerEntityExt) playerEntity).isInChickenDimention();
+        boolean isInChickenDimention = ((PlayerEntityExt) player).isInChickenDimention();
         if (isInChickenDimention) {
             cir.setReturnValue(ActionResult.FAIL);
         }
@@ -40,8 +42,6 @@ public class ServerPlayerInteractionManagerMixin {
 
     @Inject(method = "tryBreakBlock", at = @At("HEAD"), cancellable = true)
     public void tryBreakBlock(BlockPos pos, CallbackInfoReturnable info) {
-        MinecraftServer server = MinecraftClient.getInstance().getServer();
-        ServerPlayerEntity player = (ServerPlayerEntity) server.getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getUuid());
         if(((PlayerEntityExt)player).hasChickenEffect()){
             ServerWorld serverWorld = (ServerWorld) player.world;
             for (int i = 0; i < 50; i++) {

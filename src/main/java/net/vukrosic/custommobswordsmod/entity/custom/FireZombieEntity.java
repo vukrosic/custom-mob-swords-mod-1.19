@@ -1,5 +1,8 @@
 package net.vukrosic.custommobswordsmod.entity.custom;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -9,15 +12,22 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.item.ModItems;
+import net.vukrosic.custommobswordsmod.networking.ModMessages;
 import net.vukrosic.custommobswordsmod.util.FireInfectedPlayers;
+import net.vukrosic.custommobswordsmod.util.custom.HandledScreenExt;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -41,19 +51,12 @@ public class FireZombieEntity extends ZombieEntity {
     @Override
     public void onAttacking(Entity target) {
         if (target != null) {
-            if (target instanceof LivingEntity) {
-                target.setOnFireFor(5);
-                // set target's inventory on fire
+            if (target instanceof PlayerEntity) {
                 PlayerEntity playerEntity = (PlayerEntity) target;
-
+                //FireInfectedPlayers.addPlayer(playerEntity);
+                target.setOnFireFor(5);
+                ServerPlayNetworking.send(((ServerPlayerEntity) playerEntity), ModMessages.FIRE_INFECTED_ID, PacketByteBufs.create());
                 FireInfectedPlayers.addPlayer(playerEntity);
-                /*((PlayerEntityExt) target).setFireInfected(true);
-                ((PlayerEntityExt) livingEntity).setFireInfected(true);*/
-
-                //System.out.println("FireZombieEntity = " + ((PlayerEntityExt) livingEntity).fireInfected);
-
-
-
             }
             this.setOnFireFor(9999);
             super.onAttacking(target);

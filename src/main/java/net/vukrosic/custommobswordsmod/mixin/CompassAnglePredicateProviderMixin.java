@@ -52,13 +52,12 @@ public abstract class CompassAnglePredicateProviderMixin implements UnclampedMod
     private double getAngleTo(Entity entity, BlockPos pos) {
         if(SetHunterCommand.pray != null && !spinningCrazily) {
             if (SetHunterCommand.pray.getWorld().getRegistryKey().getValue().toString().equals("minecraft:overworld")) {
-                SetHunterCommand.pray.sendMessage(Text.of("Saving Overworld prey position"), false);
                 OverworldPreyPos = SetHunterCommand.pray.getBlockPos();
             } else if (SetHunterCommand.pray.getWorld().getRegistryKey().getValue().toString().equals("minecraft:the_nether")) {
-                SetHunterCommand.pray.sendMessage(Text.of("Saving Nether prey position"), false);
+                //SetHunterCommand.pray.sendMessage(Text.of("Saving Nether prey position"), false);
                 NetherPreyPos = SetHunterCommand.pray.getBlockPos();
             } else if (SetHunterCommand.pray.getWorld().getRegistryKey().getValue().toString().equals("minecraft:the_end")) {
-                SetHunterCommand.pray.sendMessage(Text.of("Saving End prey position"), false);
+                //SetHunterCommand.pray.sendMessage(Text.of("Saving End prey position"), false);
                 EndPreyPos = SetHunterCommand.pray.getBlockPos();
             }
 
@@ -66,19 +65,19 @@ public abstract class CompassAnglePredicateProviderMixin implements UnclampedMod
 
             if (entity.world.getRegistryKey().getValue().toString().equals("minecraft:overworld")) {
                 Vec3d vec3d = Vec3d.ofCenter(OverworldPreyPos);
-                SetHunterCommand.pray.sendMessage(Text.of("Compass points to OverworldPreyPos"), false);
+                //SetHunterCommand.pray.sendMessage(Text.of("Compass points to OverworldPreyPos"), false);
                 return Math.atan2(vec3d.getZ() - entity.getZ(), vec3d.getX() - entity.getX()) / 6.2831854820251465;
             } else if (entity.world.getRegistryKey().getValue().toString().equals("minecraft:the_nether")) {
                 Vec3d vec3d = Vec3d.ofCenter(NetherPreyPos);
-                SetHunterCommand.pray.sendMessage(Text.of("Compass points to NetherPreyPos"), false);
+                //SetHunterCommand.pray.sendMessage(Text.of("Compass points to NetherPreyPos"), false);
                 return Math.atan2(vec3d.getZ() - entity.getZ(), vec3d.getX() - entity.getX()) / 6.2831854820251465;
             } else if (entity.world.getRegistryKey().getValue().toString().equals("minecraft:the_end")) {
                 Vec3d vec3d = Vec3d.ofCenter(EndPreyPos);
-                SetHunterCommand.pray.sendMessage(Text.of("Compass points to EndPreyPos"), false);
+                //SetHunterCommand.pray.sendMessage(Text.of("Compass points to EndPreyPos"), false);
                 return Math.atan2(vec3d.getZ() - entity.getZ(), vec3d.getX() - entity.getX()) / 6.2831854820251465;
             } else {
                 // get name of the dimension
-                SetHunterCommand.pray.sendMessage(Text.of("The entity is in get value to string:   " + entity.world.getRegistryKey().getValue().toString()), false);
+                //SetHunterCommand.pray.sendMessage(Text.of("The entity is in get value to string:   " + entity.world.getRegistryKey().getValue().toString()), false);
                 return Math.random();
             }
         }

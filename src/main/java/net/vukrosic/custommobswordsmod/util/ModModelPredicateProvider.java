@@ -9,7 +9,6 @@ public class ModModelPredicateProvider {
 
     public static void registerModModels(){
         //registerBow(ModItems.INFINITY_BOW);
-        registerShield(ModItems.ABSORPTION_SHIELD_ITEM);
     }
 
     private static void registerBow(Item bow) {
