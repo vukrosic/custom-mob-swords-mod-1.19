@@ -9,6 +9,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.HunterGoldEggEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.chunken.HunterLewEggEntity;
 
 public class HunterGoldEggItem extends EggItem {
@@ -29,7 +30,7 @@ public class HunterGoldEggItem extends EggItem {
         world.playSound((PlayerEntity)null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         user.getItemCooldownManager().set(this, 20);
         if (!world.isClient) {
-            HunterLewEggEntity hunterEggEntity = new HunterLewEggEntity(world, user);
+            HunterGoldEggEntity hunterEggEntity = new HunterGoldEggEntity(world, user);
             hunterEggEntity.setItem(itemStack);
             hunterEggEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
             world.spawnEntity(hunterEggEntity);

@@ -14,7 +14,6 @@ import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.networking.ModMessages;
 
 public class IsInNateDim {
-
     public static void receive(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         ClientPlayerEntity player = minecraftClient.player;
         ((PlayerEntityExt)player).setChickenEffect(packetByteBuf.readBoolean());

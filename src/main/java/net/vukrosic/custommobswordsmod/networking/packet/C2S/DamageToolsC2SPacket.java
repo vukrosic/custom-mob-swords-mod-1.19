@@ -14,7 +14,6 @@ public class DamageToolsC2SPacket {
     static int maxFireTicks = 100;
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender) {
-        player.sendMessage(Text.of("DamageToolsC2SPacket receive isClient: " + player.world.isClient()), false);
         for (int i = 0; i < player.getInventory().size(); i++) {
             ItemStack itemStack = player.getInventory().getStack(i);
             if (itemStack.isDamageable()) {

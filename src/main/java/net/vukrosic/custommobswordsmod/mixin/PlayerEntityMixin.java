@@ -1,5 +1,8 @@
 package net.vukrosic.custommobswordsmod.mixin;
 
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
@@ -10,6 +13,7 @@ import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,6 +22,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.RestoreDeathCommand;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
@@ -35,8 +40,10 @@ import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.item.custom.ItemEntityMixinExt;
+import net.vukrosic.custommobswordsmod.networking.ModMessages;
 import net.vukrosic.custommobswordsmod.util.CarbonPoisoningEffectManager;
 import net.vukrosic.custommobswordsmod.util.FireInfectedPlayers;
+import net.vukrosic.custommobswordsmod.util.custom.InGameHudMixinExt;
 import net.vukrosic.custommobswordsmod.world.dimension.ModDimensions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -52,7 +59,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     // get player's dimension
 
-    
     FrogKingEntity frogKingEntity;
     ShieldingShulkerEntity shieldingShulkerEntity;
     ServerBossBar serverBossBar;
@@ -144,12 +150,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     }
 
     public void setInChickenDimention(boolean isInChickenDimention){
+        if(world.isClient) return;
+        CommandManager commandManager = world.getServer().getCommandManager();
         if(isInChickenDimention){
-            CommandManager commandManager = world.getServer().getCommandManager();
             commandManager.executeWithPrefix(world.getServer().getCommandSource(), "gamemode adventure");
         }
         else {
-            CommandManager commandManager = world.getServer().getCommandManager();
             commandManager.executeWithPrefix(world.getServer().getCommandSource(), "gamemode survival");
         }
         this.isInChickenDimension = isInChickenDimention;
@@ -184,109 +190,135 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick (CallbackInfo info) {
         if (!world.isClient) {
-            if (hasAllayHelmet && allayRespawn) {
-                //respawn allay
-                if (allayRespawnTimer > 0) {
-                    allayRespawnTimer--;
-                    if (allayRespawnTimer <= 0) {
-                        CorruptedAllayVexEntityGL corruptedAllayVexEntityGL = new CorruptedAllayVexEntityGL(EntityType.VEX, world);
-                        corruptedAllayVexEntityGL.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
-                        world.spawnEntity(corruptedAllayVexEntityGL);
-                        allayRespawnTimer = allayMaxRespawnTimer;
-                    }
-                }
-            }
-            if (this.world.getRegistryKey().getValue().toString().equals("custommobswordsmod:natedim")) {
-                if (NateDimensionTimer > 0) {
-                    NateDimensionTimer--;
-                } else {
-                    for (int i = 0; i < 2; i++) {
-                        // apply statuf effect darkness
-                        this.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0, false, false, true));
-                        PandaEntity panda = new PandaEntity(EntityType.PANDA, world);
-                        double x = this.getPos().x + (Math.random() * 60) - 30;
-                        double z = this.getPos().z + (Math.random() * 60) - 30;
-                        float yawC = (float) (Math.random() * 360);
-                        float pitchC = (float) ((Math.random() * 180) - 90);
-                        panda.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
-                        world.spawnEntity(panda);
+            if(SetHunterCommand.pray != null && SetHunterCommand.pray.getUuid().equals(this.getUuid())){
+                // set prey HP
+                //((InGameHudMixinExt) MinecraftClient.getInstance().inGameHud).setPreyHealth(this.getHealth());
+                PacketByteBuf bufHp = new PacketByteBuf(Unpooled.buffer());
+                bufHp.writeFloat(this.getHealth());
+                ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, ModMessages.PREY_HEALTH_HUD, bufHp);
 
-                        NateDimSpiderEntity nateDimSpiderEntity = new NateDimSpiderEntity(EntityType.SPIDER, world);
-                        nateDimSpiderEntity.refreshPositionAndAngles(x, this.getPos().y+15, z, yawC, pitchC);
-                        world.spawnEntity(nateDimSpiderEntity);
-                    }
+                Vec3d pos = new Vec3d(SetHunterCommand.pray.getBlockPos().getX(), SetHunterCommand.pray.getBlockPos().getY(), SetHunterCommand.pray.getBlockPos().getZ());
+                PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+                passedData.writeBlockPos(this.getBlockPos());
+                if(this.world.getRegistryKey() == World.OVERWORLD) {
+                    // if it is, send pray position to client
+                    ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, ModMessages.SET_OVERWORLD_PREY_POS, passedData);
+                } else if (this.world.getRegistryKey() == World.NETHER) {
+                    // if it is, send pray position to client
+                    ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, ModMessages.SET_NETHER_PREY_POS, passedData);
+                }
+                else if (this.world.getRegistryKey() == World.END) {
+                    // if it is, send pray position to client
+                    ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, ModMessages.SET_THEEND_PREY_POS, passedData);
                 }
 
             }
 
+        }
 
-            if (CombustometerManager.players.contains((PlayerEntity) (Object) this)) {
-                // get hunger manager
-                HungerManager hungerManager = getHungerManager();
-                hungerManager.getFoodLevel();
-                if (hungerManager.getFoodLevel() == 20) {
-                    if (combustometerBossBarProgress < 1) {
-                        combustometerBossBarProgress += 0.002;
-                        combustometerBossBar.setPercent(combustometerBossBarProgress);
-                    } else {
-                        // set randomly on fire
-                        Random random = new Random();
-                        int randomInt = random.nextInt(2400);
-                        if (randomInt < 3) {
-                            // set on fire
-                            this.setOnFireFor(5);
-                        }
-                    }
-                }
-            }
-            // check if chicken dimension every 20th tick
-
-            if (world.getRegistryKey() == ModDimensions.CHICKENDIM_DIMENSION_KEY) {
-                double y = this.getPos().y;
-                if (y < (-100)) {
-                    this.teleport(this.getPos().x + Math.random() * 100, 200, this.getPos().z + Math.random() * 100);
-                }
-                setInChickenDimention(true);
-            } else {
-                setInChickenDimention(false);
-            }
-
-
-///execute in minecraft:overworld teleport ~ ~ ~
-
-            if (isInChickenDimension) {
-                if (Math.random() < 1) {
-                    for (int i = 0; i < 2; i++) {
-                        SpittingChickenEntity spittingChickenEntity = new SpittingChickenEntity(ModEntities.SPITTING_CHICKEN, world);
-                        double x = this.getPos().x + (Math.random() * 60) - 30;
-                        double z = this.getPos().z + (Math.random() * 60) - 30;
-                        // random yaw between 0 and 360
-                        float yawC = (float) (Math.random() * 360);
-                        // random pitch between -90 and 90
-                        float pitchC = (float) ((Math.random() * 180) - 90);
-                        spittingChickenEntity.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
-                        world.spawnEntity(spittingChickenEntity);
-                        world.addParticle(ParticleTypes.WITCH, x, this.getPos().y, z, 2, 2, 2);
-                    }
-
-                }
-            }
-
-
-
-            double randomNumber = Math.random();
-            if (randomNumber > 0.92) {
-                if (super.isOnFire() && fireEndermenEnabled) {
-                    BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
-                    FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
-                    fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
-                    world.spawnEntity(fireEndermanEntity);
-                    // set fireEndermanEntity angry at player
-                    fireEndermanEntity.setTarget(this);
+        if (hasAllayHelmet && allayRespawn) {
+            //respawn allay
+            if (allayRespawnTimer > 0) {
+                allayRespawnTimer--;
+                if (allayRespawnTimer <= 0) {
+                    CorruptedAllayVexEntityGL corruptedAllayVexEntityGL = new CorruptedAllayVexEntityGL(EntityType.VEX, world);
+                    corruptedAllayVexEntityGL.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+                    world.spawnEntity(corruptedAllayVexEntityGL);
+                    allayRespawnTimer = allayMaxRespawnTimer;
                 }
             }
         }
+        if (this.world.getRegistryKey().getValue().toString().equals("custommobswordsmod:natedim")) {
+            if (NateDimensionTimer > 0) {
+                NateDimensionTimer--;
+            } else {
+                for (int i = 0; i < 2; i++) {
+                    // apply statuf effect darkness
+                    this.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0, false, false, true));
+                    PandaEntity panda = new PandaEntity(EntityType.PANDA, world);
+                    double x = this.getPos().x + (Math.random() * 60) - 30;
+                    double z = this.getPos().z + (Math.random() * 60) - 30;
+                    float yawC = (float) (Math.random() * 360);
+                    float pitchC = (float) ((Math.random() * 180) - 90);
+                    panda.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
+                    world.spawnEntity(panda);
+
+                    NateDimSpiderEntity nateDimSpiderEntity = new NateDimSpiderEntity(EntityType.SPIDER, world);
+                    nateDimSpiderEntity.refreshPositionAndAngles(x, this.getPos().y+15, z, yawC, pitchC);
+                    world.spawnEntity(nateDimSpiderEntity);
+                }
+            }
+
+        }
+
+
+        if (CombustometerManager.players.contains((PlayerEntity) (Object) this)) {
+            // get hunger manager
+            HungerManager hungerManager = getHungerManager();
+            hungerManager.getFoodLevel();
+            if (hungerManager.getFoodLevel() == 20) {
+                if (combustometerBossBarProgress < 1) {
+                    combustometerBossBarProgress += 0.002;
+                    combustometerBossBar.setPercent(combustometerBossBarProgress);
+                } else {
+                    // set randomly on fire
+                    Random random = new Random();
+                    int randomInt = random.nextInt(2400);
+                    if (randomInt < 3) {
+                        // set on fire
+                        this.setOnFireFor(5);
+                    }
+                }
+            }
+        }
+        // check if chicken dimension every 20th tick
+
+        if (world.getRegistryKey() == ModDimensions.CHICKENDIM_DIMENSION_KEY) {
+            double y = this.getPos().y;
+            if (y < (-100)) {
+                this.teleport(this.getPos().x + Math.random() * 100, 200, this.getPos().z + Math.random() * 100);
+            }
+            setInChickenDimention(true);
+        } else {
+            setInChickenDimention(false);
+        }
+
+
+        ///execute in minecraft:overworld teleport ~ ~ ~
+
+        if (isInChickenDimension) {
+            if (Math.random() < 1) {
+                for (int i = 0; i < 2; i++) {
+                    SpittingChickenEntity spittingChickenEntity = new SpittingChickenEntity(ModEntities.SPITTING_CHICKEN, world);
+                    double x = this.getPos().x + (Math.random() * 60) - 30;
+                    double z = this.getPos().z + (Math.random() * 60) - 30;
+                    // random yaw between 0 and 360
+                    float yawC = (float) (Math.random() * 360);
+                    // random pitch between -90 and 90
+                    float pitchC = (float) ((Math.random() * 180) - 90);
+                    spittingChickenEntity.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
+                    world.spawnEntity(spittingChickenEntity);
+                    world.addParticle(ParticleTypes.WITCH, x, this.getPos().y, z, 2, 2, 2);
+                }
+
+            }
+        }
+
+
+
+        double randomNumber = Math.random();
+        if (randomNumber > 0.92) {
+            if (super.isOnFire() && fireEndermenEnabled) {
+                BlockPos pos = new BlockPos(world.getRandom().nextInt(10), world.getRandom().nextInt(10), world.getRandom().nextInt(10));
+                FireEndermanEntityGL fireEndermanEntity = new FireEndermanEntityGL(ModEntities.FIRE_ENDERMAN, world);
+                fireEndermanEntity.refreshPositionAndAngles(this.getX() + pos.getX(), this.getY() + pos.getY(), this.getZ() + pos.getZ(), 0, 0);
+                world.spawnEntity(fireEndermanEntity);
+                // set fireEndermanEntity angry at player
+                fireEndermanEntity.setTarget(this);
+            }
+        }
     }
+
 
 
 
@@ -461,13 +493,52 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         if(RestoreDeathCommand.speedruner != null && this.getName() == RestoreDeathCommand.speedruner.getName()){
             RestoreDeathCommand.saveState();
         }
+        // if player's vehicle is frog king, ignore fall damage
+        if(source == DamageSource.FALL && this.getVehicle() instanceof FrogKingEntity){
+            cir.setReturnValue(false);
+        }
     }
 
 
 
+    //inject into onDeath
+    @Inject(method = "onDeath", at = @At("HEAD"), cancellable = true)
+    public void onDeath(DamageSource source, CallbackInfo ci) {
+        // if player is set to summoner, deactivate summoner
+        if(summonerEntityGL != null){
+            summonerEntityGL.controllingPlayer = null;
+            summonerEntityGL.discard();
+            summonerEntityGL = null;
+        }
+    }
 
 
 
+    // animation player shielding shulker
+    /*public void onTrackedDataSet(TrackedData<?> data) {
+        if (POSE.equals(data)) {
+            EntityPose entityPose = this.getPose();
+            if (entityPose == EntityPose.LONG_JUMPING) {
+                this.longJumpingAnimationState.start(this.age);
+            } else {
+                this.longJumpingAnimationState.stop();
+            }
+
+            if (entityPose == EntityPose.CROAKING) {
+                this.croakingAnimationState.start(this.age);
+            } else {
+                this.croakingAnimationState.stop();
+            }
+
+            if (entityPose == EntityPose.USING_TONGUE) {
+                this.usingTongueAnimationState.start(this.age);
+            } else {
+                this.usingTongueAnimationState.stop();
+            }
+        }
+
+        super.onTrackedDataSet(data);
+    }*/
 
     
     public void addCombustomenter(){

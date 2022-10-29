@@ -42,17 +42,18 @@ public class ServerPlayerInteractionManagerMixin {
 
     @Inject(method = "tryBreakBlock", at = @At("HEAD"), cancellable = true)
     public void tryBreakBlock(BlockPos pos, CallbackInfoReturnable info) {
+        /*
         if(((PlayerEntityExt)player).hasChickenEffect()){
             ServerWorld serverWorld = (ServerWorld) player.world;
             for (int i = 0; i < 50; i++) {
                 Random rand = new Random();
-                double x = pos.getX() + (rand.nextDouble() - 0.5) * 2;
-                double y = pos.getY() + (rand.nextDouble() - 0.5) * 2;
-                double z = pos.getZ() + (rand.nextDouble() - 0.5) * 2;
+                double x = pos.getX() - 0.5 + (rand.nextDouble() - 0.5) * 2;
+                double y = pos.getY() - 0.5 + (rand.nextDouble() - 0.5) * 2;
+                double z = pos.getZ() - 0.5 + (rand.nextDouble() - 0.5) * 2;
                 serverWorld.spawnParticles(ModParticles.FEATHER_PARTICLE, x, y + 1, z, 1, 0, 0, 0, 1);
                 //serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, x, y + 1, z, 1, 0, 0, 0, 1);
             }
 
-        }
+        }*/
     }
 }

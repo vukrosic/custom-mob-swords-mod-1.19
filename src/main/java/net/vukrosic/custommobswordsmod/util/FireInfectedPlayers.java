@@ -64,22 +64,6 @@ public class FireInfectedPlayers {
 
     static void damageTools(PlayerEntity player) {
         ClientPlayNetworking.send(ModMessages.DAMAGE_TOOLS, PacketByteBufs.create());
-        /*
-        if(player != null) {
-            //if (!player.world.isClient) {
-                for (int i = 0; i < player.getInventory().size(); i++) {
-                    ItemStack itemStack = player.getInventory().getStack(i);
-                    if (itemStack.isDamageable()) {
-                        if (itemStack.getItem() instanceof ToolItem) {
-                            if (((ToolItem) itemStack.getItem()).getMaterial() == ToolMaterials.GOLD) {
-                                player.getInventory().removeStack(i);
-                            }
-                            itemStack.setDamage(itemStack.getDamage() + itemStack.getMaxDamage() / maxFireTicks);
-                        }
-                    }
-                }
-            //}
-        }*/
     }
 
 

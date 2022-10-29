@@ -1,10 +1,12 @@
 package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
@@ -30,6 +32,7 @@ public class ChunkenPhaseManager {
     static ArrayList<String> attackAnimation = new ArrayList<>();
 
     public static PlayerEntity chickenEffectPlayer = null;
+    public static PlayerEntity chickenDimensionPlayer = null;
 
 
     public static void resetChunkenPhase() {
@@ -40,6 +43,7 @@ public class ChunkenPhaseManager {
         chunkenPhase = 4;
         if(eatenPlayer != null){
             MinecraftServer server = eatenPlayer.getServer();
+            assert server != null;
             CommandManager commandManager = server.getPlayerManager().getServer().getCommandManager();
             String xStr = String.valueOf(eatenPlayer.getX() + 8);
             String yStr = String.valueOf(eatenPlayer.getY());
@@ -50,6 +54,9 @@ public class ChunkenPhaseManager {
         }
 
     }
+
+
+
 
     public static void createChunkenPhases(){
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png"));
@@ -94,6 +101,8 @@ public class ChunkenPhaseManager {
     }
 
     public static Identifier getChunkenTexture(){
+        if(MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().world != null)
+            //MinecraftClient.getInstance().player.sendMessage(Text.of("ChunkenPhaseManager getChunkenTexture chunkenPhase: " + chunkenPhase));
         if(eatenPlayer != null && chunkenPhase >= 3){
             return get4Texture(eatenPlayer);
         }

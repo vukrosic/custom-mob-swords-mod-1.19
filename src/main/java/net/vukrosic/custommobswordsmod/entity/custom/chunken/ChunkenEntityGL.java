@@ -1,6 +1,10 @@
 package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -13,12 +17,15 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
@@ -27,6 +34,7 @@ import net.vukrosic.custommobswordsmod.entity.custom.HunterEggEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.PlayerEntityExt;
 import net.vukrosic.custommobswordsmod.item.ModItems;
 import net.vukrosic.custommobswordsmod.item.custom.HunterEggItem;
+import net.vukrosic.custommobswordsmod.networking.ModMessages;
 import net.vukrosic.custommobswordsmod.particle.ModParticles;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.AnimationState;
@@ -39,6 +47,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 
@@ -68,7 +77,8 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
                 hasEggToPoop = false;
                 poopEggTimer = 40;
                 // drop item
-                this.dropItem(ModItems.HUNTER_EGG_ITEM);
+                ItemEntity goldEggItem = this.dropItem(ModItems.HUNTER_GOLD_EGG_ITEM);
+                //gold
             }
         }
 
@@ -110,7 +120,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
         }
         if(ChunkenPhaseManager.chunkenPhase == 3) {
             for(PlayerEntity player : world.getPlayers()) {
-                if(player.getName().getString() == "Goldactual") {
+                if(ChunkenPhaseManager.chickenDimensionPlayer != null && player.getUuid() == ChunkenPhaseManager.chickenDimensionPlayer.getUuid()) {
                     super.setTarget(player);
                 }
             }
@@ -125,27 +135,33 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
             }
         }
     }
-
     @Override
     public boolean damage(DamageSource source, float amount) {
         if(!world.isClient() && ChunkenPhaseManager.chunkenPhase <= 2) {
             if (source.getAttacker() instanceof PlayerEntity n) {
-                PlayerEntity attacker = (PlayerEntity) source.getAttacker();
-                MinecraftServer server = source.getSource().getServer();
+                MinecraftServer server = Objects.requireNonNull(source.getSource()).getServer();
+                assert server != null;
                 CommandManager commandManager = server.getPlayerManager().getServer().getCommandManager();
                 float scale = ChunkenPhaseManager.scalePerPhase / ChunkenPhaseManager.hitsPerPhase;
                 String scaleString = String.valueOf(scale);
                 String command = "/scale add " + scaleString + " @e[type=custommobswordsmod:chunkengl]";
-                /*attacker.sendMessage(Text.of("IS IT THE SAME: " + command.equals("/scale add 2 @e[type=custommobswordsmod:chunkengl]")), false);
-                attacker.sendMessage(Text.of(("/scale add 2 @e[type=custommobswordsmod:chunkengl]")), false);*/
-                commandManager.executeWithPrefix(attacker.getCommandSource(), command);
+                commandManager.executeWithPrefix(n.getCommandSource(), command);
                 hitsToNextPhase--;
                 if(hitsToNextPhase <= 0 && ChunkenPhaseManager.chunkenPhase < 3) {
-                    ChunkenPhaseManager.chunkenPhase++;
+                    ServerPlayNetworking.send((ServerPlayerEntity) n, ModMessages.CHUNKEN_PHASE_INCREMENT, new PacketByteBuf(Unpooled.buffer()));
                     hitsToNextPhase = ChunkenPhaseManager.hitsPerPhase;
                 }
             }
         }
+        /*
+        if(world.isClient()){
+            if (source.getAttacker() instanceof PlayerEntity n) {
+                if (hitsToNextPhase <= 0 && ChunkenPhaseManager.chunkenPhase < 3) {
+                    ChunkenPhaseManager.chunkenPhase++;
+                    hitsToNextPhase = ChunkenPhaseManager.hitsPerPhase;
+                }
+            }
+        }*/
         return super.damage(source, amount);
     }
 
@@ -224,6 +240,9 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
         ((PlayerEntityExt)player).setInChickenDimention(true);
         ((PlayerEntityExt)player).setChickenEffect(true);
         ChunkenPhaseManager.eatenPlayer = (PlayerEntity) player;
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeBoolean(true);
+        ServerPlayNetworking.send((ServerPlayerEntity) player, ModMessages.CHICKEN_EFFECT_POST_ID, buf);
 
         hasEggToPoop = true;
         //player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/gamemode adventure");

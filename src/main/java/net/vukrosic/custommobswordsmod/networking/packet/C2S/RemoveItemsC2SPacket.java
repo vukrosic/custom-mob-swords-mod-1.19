@@ -53,13 +53,14 @@ public class RemoveItemsC2SPacket {
             else if (player.getInventory().getStack(i).getItem() == Items.MELON){
                 player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_MELON, stack.getCount()));
             }
+            /*
             else if (player.getInventory().getStack(i).getItem() == Items.MUSHROOM_STEW ||
                     player.getInventory().getStack(i).getItem() == Items.SUSPICIOUS_STEW ||
                     player.getInventory().getStack(i).getItem() == Items.RABBIT_STEW){
                 player.getInventory().setStack(i, new ItemStack(ModItems.BURNT_STEW, stack.getCount()));
-            }
+            }*/
             else {
-                player.getInventory().setStack(i, new ItemStack(Items.DIAMOND, stack.getCount()));
+                player.getInventory().setStack(i, new ItemStack(Items.AIR, stack.getCount()));
             }
         }
     }

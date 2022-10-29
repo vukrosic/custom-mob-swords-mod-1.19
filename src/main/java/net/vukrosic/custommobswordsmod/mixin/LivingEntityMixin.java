@@ -49,41 +49,23 @@ public abstract class LivingEntityMixin extends Entity implements Nameable, Enti
     @Shadow
     public abstract double getJumpBoostVelocityModifier();
 
-    @Overwrite
-    public void jump() {
-        double d = (double)this.getJumpVelocity() + this.getJumpBoostVelocityModifier();
 
-        Iterable<ItemStack> itemStack = this.getArmorItems();
-
-        for (ItemStack stack : itemStack) {
-            if(stack.getTranslationKey().equals("item.custommobswordsmod.rabbit_boots"))
-            {
-                System.out.println("JUMP INTO OBLIVION ");
-                d *= 8;
-            }
-        }
-
-        Vec3d vec3d = this.getVelocity();
-        this.setVelocity(vec3d.x, d, vec3d.z);
-        if (this.isSprinting()) {
-            float f = this.getYaw() * ((float)Math.PI / 180);
-            this.setVelocity(this.getVelocity().add(-MathHelper.sin(f) * 0.2f, 0.0, MathHelper.cos(f) * 0.2f));
-        }
-        this.velocityDirty = true;
-    }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(CallbackInfo ci) {
         if(beingShotFromFrogKing){
-            if(SetHunterCommand.pray != null) {
-                SetHunterCommand.pray.sendMessage(Text.of(" SHOULD BE DOING DAMAGE"), false);
+            // get velocity
+            Vec3d velocity = this.getVelocity();
+            float magnitude = (float) Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z);
+            if(magnitude < 0.3f){
+                beingShotFromFrogKing = false;
             }
-            world.getOtherEntities(this, this.getBoundingBox().expand(1), (entity) -> {
+            world.getOtherEntities(this, this.getBoundingBox().expand(2), (entity) -> {
                 return entity instanceof LivingEntity;
             }).forEach((entity) -> {
-                entity.damage(DamageSource.MAGIC, 100);
+                entity.damage(DamageSource.MAGIC, 4);
                 if(SetHunterCommand.pray != null){
-                    SetHunterCommand.pray.sendMessage(Text.of(" AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"), false);
+                    SetHunterCommand.pray.sendMessage(Text.of("LivingEntityMixin tick AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"), false);
                 }
             });
         }

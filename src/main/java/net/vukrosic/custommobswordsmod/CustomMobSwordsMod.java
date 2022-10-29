@@ -34,8 +34,7 @@ public class CustomMobSwordsMod implements ModInitializer {
 		//ModVillagers.registerVillagers();
 		//ModVillagers.registerTrades();
 		ModRegistries.registerModStuffs();
-		//ModBlockEntities.registerAllBlockEntities();
-		ModDimensions.register();
+		//ModDimensions.register();
         GeckoLib.initialize();
 		ModEffects.registerEffects();
 		ModParticles.registerParticles();

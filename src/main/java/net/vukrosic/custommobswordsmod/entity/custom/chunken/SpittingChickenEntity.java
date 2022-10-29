@@ -29,6 +29,12 @@ public class SpittingChickenEntity extends ChickenEntity {
         if(source.getAttacker() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) source.getAttacker();
             this.setTarget(player);
+            this.world.getEntitiesByClass(SpittingChickenEntity.class, this.getBoundingBox().expand(10), (entity) -> {
+                return entity != this;
+            }).forEach((entity) -> {
+                entity.setTarget(player);
+                entity.spitting = true;
+            });
             spitting = true;
         }
         return super.damage(source, amount);

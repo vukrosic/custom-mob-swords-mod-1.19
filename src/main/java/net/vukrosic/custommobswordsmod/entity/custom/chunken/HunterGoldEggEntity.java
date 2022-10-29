@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class HunterGoldEggEntity extends EnderPearlEntity {
-    public LivingEntity hunter;
 
     public HunterGoldEggEntity(World world, LivingEntity owner) {
         super(world, owner);
@@ -23,10 +22,8 @@ public class HunterGoldEggEntity extends EnderPearlEntity {
     protected void onCollision(HitResult hitResult) {
         ServerWorld serverWorld = (ServerWorld)this.world;
         particles();
-        if(hunter == null)
-            hunter = (LivingEntity)this.getOwner();
-        if(hunter != null){
-            serverWorld.getServer().getCommandManager().executeWithPrefix(serverWorld.getServer().getCommandSource(), "execute in minecraft:overworld run teleport Lewwolfe " + hitResult.getPos().getX() + " " + hitResult.getPos().getY() + " " + hitResult.getPos().getZ());
+        if(ChunkenPhaseManager.chickenDimensionPlayer != null){
+            serverWorld.getServer().getCommandManager().executeWithPrefix(serverWorld.getServer().getCommandSource(), "execute in minecraft:overworld run teleport " + ChunkenPhaseManager.chickenDimensionPlayer.getName().getString() + " " + hitResult.getPos().getX() + " " + hitResult.getPos().getY() + " " + hitResult.getPos().getZ());
         }
         this.discard();
     }
