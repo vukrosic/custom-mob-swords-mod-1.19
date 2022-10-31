@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
 import net.vukrosic.custommobswordsmod.entity.custom.ChunkenEntity;
+import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
@@ -21,7 +22,6 @@ public class ChunkenEntityRenderer extends GeoEntityRenderer<ChunkenEntity> {
     @Override
     public Identifier getTextureResource(ChunkenEntity instance) {
         return new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chunken.png");
-
     }
 
     @Override

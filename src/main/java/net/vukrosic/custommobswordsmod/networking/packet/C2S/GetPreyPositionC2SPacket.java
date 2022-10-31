@@ -13,7 +13,6 @@ import net.vukrosic.custommobswordsmod.networking.ModMessages;
 public class GetPreyPositionC2SPacket {
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender){
-        System.out.println("Received packet from client. This world is Client: " + player.world.isClient);
         //ClientPlayNetworking.send(ModMessages.SET_PREY_POS, PacketByteBufs.create());
     }
 }

@@ -19,15 +19,25 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.effect.ModEffects;
+import net.vukrosic.custommobswordsmod.entity.custom.chunken.ChunkenPhaseManager;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class BlinkingWardenEntity extends WardenEntity {
+public class BlinkingWardenEntity extends WardenEntity/* implements IAnimatable */{
+    //private AnimationFactory factory = new AnimationFactory(this);
     public BlinkingWardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -58,21 +68,43 @@ public class BlinkingWardenEntity extends WardenEntity {
         return false;
     }
 
-
+    @Override
+    public void playSound(SoundEvent sound, float volume, float pitch) {
+        //super.playSound(sound, volume, pitch);
+    }
 
     @Override
     public boolean shouldRender(double distance) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
-        // if player has carbonposioning effect
-
-        return true;
-        /*
-        player.sendMessage(Text.of("Contains darkness1 " + player.getStatusEffect(StatusEffects.DARKNESS)), false);
-        if(player.getStatusEffect(StatusEffects.DARKNESS) != null) {
-            return super.shouldRender(distance);
+        assert MinecraftClient.getInstance().player != null;
+        if (MinecraftClient.getInstance().player.hasStatusEffect(ModEffects.CARBONPOISONING)) {
+            return true;
+        } else {
+            return false;
         }
-        return false;*/
     }
 
+/*
+    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        if (event.isMoving()) {
+            // set animatino speed to 5x
+            event.getController().setAnimationSpeed(5);
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getWalkAnimation(), true));
+            return PlayState.CONTINUE;
+        }
+        else {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(ChunkenPhaseManager.getIdleAnimation(), true));
+            return PlayState.CONTINUE;
+        }
+    }
+
+    @Override
+    public void registerControllers(AnimationData animationData) {
+        animationData.addAnimationController(new AnimationController(this, "controller",
+                0, this::predicate));
+    }
+    @Override
+    public AnimationFactory getFactory() {
+        return factory;
+    }*/
 
 }

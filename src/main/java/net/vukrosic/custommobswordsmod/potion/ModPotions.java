@@ -10,13 +10,21 @@ import net.vukrosic.custommobswordsmod.effect.ModEffects;
 
 public class ModPotions {
     public static Potion FIRE_ENDERMAN_POTION;
+    public static Potion ENDER_ZOGLIN_POTION;
 
-    public static Potion registerPotion(String name) {
+    public static Potion registerFireEndermanPotion(String name) {
         return Registry.register(Registry.POTION, new Identifier(CustomMobSwordsMod.MOD_ID, name),
                 new Potion(new StatusEffectInstance(ModEffects.FIRE_ENDERMAN, 2000, 0)));
     }
 
+    public static Potion registerEnderZoglinPotion(String name) {
+        return Registry.register(Registry.POTION, new Identifier(CustomMobSwordsMod.MOD_ID, name),
+                new Potion(new StatusEffectInstance(ModEffects.ENDER_ZOGLIN, 2000, 0)));
+    }
+
     public static void registerPotions() {
-        FIRE_ENDERMAN_POTION = registerPotion("fire_enderman_potion");
+
+        FIRE_ENDERMAN_POTION = registerFireEndermanPotion("fire_enderman_potion");
+        ENDER_ZOGLIN_POTION = registerEnderZoglinPotion("ender_zoglin_potion");
     }
 }

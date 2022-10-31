@@ -1,5 +1,6 @@
 package net.vukrosic.custommobswordsmod.entity.custom;
 
+import net.minecraft.util.math.Vec3d;
 import net.vukrosic.custommobswordsmod.entity.custom.frogking.FrogKingEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.shieldingshulker.ShieldingShulkerEntity;
 import net.vukrosic.custommobswordsmod.entity.custom.summoner.SummonerEntityGL;
@@ -14,6 +15,9 @@ public interface PlayerEntityExt {
     public boolean hasChickenEffect = false;
     boolean isInChickenDimention = false;*/
 
+    void setNeedsToGetVelocity(boolean needsToGetVelocity);
+    void setVelocityFrogKingSummon(Vec3d velocityFrogKingSummon);
+    void setSummoningFrogKingEntity(FrogKingEntity summoningFrogKingEntity);
     void setInNateDimension(boolean isInNateDimension);
     boolean isInNateDimension();
 

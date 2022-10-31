@@ -3,22 +3,27 @@ package net.vukrosic.custommobswordsmod.entity.custom.butcherboy;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.command.ButcherBoyCommand;
 import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -27,6 +32,9 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
@@ -40,6 +48,8 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
 
     double attackNo = 0;
 
+    ServerBossBar serverBossBar = new ServerBossBar(this.getDisplayName(), ServerBossBar.Color.BLUE, ServerBossBar.Style.PROGRESS);
+
 
     public ButcherBoyEntityGL(
         EntityType<? extends HostileEntity> entityType, World world) {
@@ -51,14 +61,15 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public boolean tryAttack(Entity target) {
+        // get a lit of all players on the server
+
         // attackNo is random number between 0 and 3
 
         // get a random number between 0 and 1
 
 
-        if(SetHunterCommand.pray != null)
-            SetHunterCommand.pray.sendMessage(Text.of("attackNo: " + attackNo));
-        //target.sendMessage(Text.of("Math.random(): " + Math.random() + "  attackNo: " + attackNo));
+
+
 
         if(attackNo < 0.25){
             return super.tryAttack(target);
@@ -80,6 +91,10 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public void tick() {
+        if(!world.isClient()){
+            addBossBarToAllPlayers();
+        }
+
         attackNo = Math.random();
         setAnimation(attackNo);
         // if target is null
@@ -102,13 +117,10 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
     void pushHunterIntoTheGround(Entity target){
         // if distance to target is 2 blocks
         if(target != null){
-            if(this.distanceTo(target) < 2){
+            if(this.distanceTo(target) < 4){
                 target.setVelocity(0, -0.5, 0);
                 // set player 2 bock down into the ground and make them suffocate
                 target.teleport(target.getX(), target.getY() - 3, target.getZ());
-                if(target instanceof PlayerEntity){
-                    ((PlayerEntity)target).sendMessage(Text.of("pushing player into the ground"), false);
-                }
 
             }
         }
@@ -119,8 +131,7 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
         // if distance to target is 2 blocks
         if(target != null && target instanceof PlayerEntity){
             PlayerEntity player = (PlayerEntity) target;
-            if(this.distanceTo(player) < 2){
-                player.sendMessage(Text.of("launching hunter into the air" ), false);
+            if(this.distanceTo(player) < 4){
                 player.setVelocity(0, 100, 0);
             }
         }
@@ -132,7 +143,6 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
         if(target != null && target instanceof PlayerEntity){
             PlayerEntity player = (PlayerEntity) target;
             // for each player in SetHunterCommand.players spawn explosive cow
-            player.sendMessage(Text.of("summoning explosion cow"), false);
             ExplosiveCowEntity cow = new ExplosiveCowEntity(ModEntities.EXPLOSIVE_COW, world);
             cow.refreshPositionAndAngles(player.getX(), player.getY() + 3, player.getZ(), 0, 0);
             world.spawnEntity(cow);
@@ -144,8 +154,13 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
 
 
 
-
-
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if(target == SetHunterCommand.pray){
+            return;
+        }
+        super.setTarget(target);
+    }
 
     /*===================================================
     =================================================*/
@@ -157,8 +172,6 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 2.0f)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15f);
     }
-
-
 
 
 
@@ -199,8 +212,6 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
         if(this.handSwinging && event.getController().getAnimationState().equals(AnimationState.Stopped)) {
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation(getAnimation(), false));
-            if(SetHunterCommand.pray != null)
-                SetHunterCommand.pray.sendMessage(Text.of("ANIMATION: " + getAnimation() + " " + attackNo));
 /*
             if(attackNo < 0.25){
                 if(SetHunterCommand.pray != null)
@@ -270,5 +281,38 @@ public class ButcherBoyEntityGL extends HostileEntity implements IAnimatable {
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15f, 1.0f);
+    }
+
+    void addBossBarToAllPlayers(){
+        if(Math.random() > 0.4){
+            return;
+        }
+        if(!ButcherBoyCommand.serverBossBars.contains(serverBossBar)){
+            ButcherBoyCommand.serverBossBars.add(serverBossBar);
+        }
+        ArrayList<ServerPlayerEntity> players = new ArrayList<>(Objects.requireNonNull(this.getServer()).getPlayerManager().getPlayerList());
+        for(ServerPlayerEntity player : players) {
+            if(serverBossBar.getPlayers().contains(player)){
+                continue;
+            }
+            serverBossBar.addPlayer(player);
+        }
+    }
+
+
+
+
+    @Override
+    public void setHealth(float health) {
+        if(serverBossBar != null) {
+            serverBossBar.setPercent(health / this.getMaxHealth());
+            if (health <= 0) {
+                ArrayList<ServerPlayerEntity> players = new ArrayList<>(Objects.requireNonNull(this.getServer()).getPlayerManager().getPlayerList());
+                for (ServerPlayerEntity player : players) {
+                    serverBossBar.removePlayer(player);
+                }
+            }
+        }
+        super.setHealth(health);
     }
 }

@@ -50,20 +50,29 @@ public class ResetChunkenCommand {
 
     private static int removeEffect(ServerCommandSource source/*, Collection<? extends Entity> targets*/) {
         // put speedrunner in creative mode
-        ((PlayerEntityExt)source.getPlayer()).setChickenEffect(false);
+        //((PlayerEntityExt)source.getPlayer()).setChickenEffect(false);
+        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+        passedData.writeBoolean(false);
+        ServerPlayNetworking.send(source.getPlayer(), ModMessages.CHICKEN_EFFECT_POST_ID, passedData);
         return 1;
     }
 
     private static int giveEffect(ServerCommandSource source/*, Collection<? extends Entity> targets*/) {
         // put speedrunner in creative mode
-        ((PlayerEntityExt)source.getPlayer()).setChickenEffect(true);
+        //((PlayerEntityExt)source.getPlayer()).setChickenEffect(true);
+        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+        passedData.writeBoolean(true);
+        ServerPlayNetworking.send(source.getPlayer(), ModMessages.CHICKEN_EFFECT_POST_ID, passedData);
         return 1;
     }
     private static int reset(ServerCommandSource source/*, Collection<? extends Entity> targets*/) {
         // put speedrunner in creative mode
         // for each hunter in hunters list
         for(PlayerEntity hunter : SetHunterCommand.hunters){
-            ((PlayerEntityExt)hunter).setChickenEffect(false);
+            //((PlayerEntityExt)hunter).setChickenEffect(false);
+            PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+            passedData.writeBoolean(false);
+            ServerPlayNetworking.send(source.getPlayer(), ModMessages.CHICKEN_EFFECT_POST_ID, passedData);
         }
         ChunkenPhaseManager.resetChunkenPhase();
         ServerPlayerEntity player = source.getPlayer();

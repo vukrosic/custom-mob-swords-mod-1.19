@@ -20,6 +20,7 @@ public class ModEffects {
     public static StatusEffect CARBONPOISONING;
 
     public static StatusEffect FIRE_ENDERMAN;
+    public static StatusEffect ENDER_ZOGLIN;
 
     public static StatusEffect FROGKINGPOISON = Registry.register(Registry.STATUS_EFFECT, new Identifier(CustomMobSwordsMod.MOD_ID, "frogkingpoison"),
             new FrogKingPoisonEffect(StatusEffectCategory.HARMFUL, 8724287));
@@ -39,7 +40,11 @@ public class ModEffects {
     private static StatusEffect registerFireEndermanEffect(String name) {
         return Registry.register(Registry.STATUS_EFFECT, new Identifier(CustomMobSwordsMod.MOD_ID, name),
                 new FireEndermanEffect(StatusEffectCategory.HARMFUL, 25512780));
+    }
 
+    private static StatusEffect registerEnderZoglinEffect(String name) {
+        return Registry.register(Registry.STATUS_EFFECT, new Identifier(CustomMobSwordsMod.MOD_ID, name),
+                new EnderZoglinEffect(StatusEffectCategory.BENEFICIAL, 61512780));
     }
 
     public static void registerEffects() {
@@ -47,6 +52,7 @@ public class ModEffects {
         CARBONPOISONING = registerCarbonPoisoningEffect("carbonpoisoning");
         CHICKEN = registerChickenEffect("chicken");
         FIRE_ENDERMAN = registerFireEndermanEffect("fire_enderman");
+        ENDER_ZOGLIN = registerEnderZoglinEffect("ender_zoglin");
         /*FROGKINGPOISON = registerStatusEffect("frogkingpoision");
         SHIELDOFABSORBTION = registerStatusEffect("shieldofabsorbtion");*/
 

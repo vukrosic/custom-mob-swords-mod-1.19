@@ -48,7 +48,6 @@ public class SetHunterCommand {
         for (Entity entity : targets) {
             if (entity instanceof PlayerEntity) {
                 pray = (PlayerEntity) entity;
-                System.out.println("Prey set to " + pray);
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 // save player to buf
                 buf.writeUuid(pray.getUuid());
@@ -61,7 +60,6 @@ public class SetHunterCommand {
         for (Entity entity : targets) {
             if (entity instanceof PlayerEntity) {
                 hunters.add((PlayerEntity) entity);
-                System.out.println("Hunter set to " + pray);
             }
         }
         return 1;

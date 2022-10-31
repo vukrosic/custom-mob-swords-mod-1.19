@@ -22,28 +22,38 @@ public class ModItems {
             new SpawnEggItem(ModEntities.BUTCHER_COW_SPAWN_ENTITY, 0x443626, 0xA1A1A1,
                     new FabricItemSettings().group(ItemGroup.MISC)));
 
+    public static final Item FROG_KING_SPAWN_ITEM = registerItem("frog_king_spawn_item",
+            new FrogKingSpawnEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
+
     public static final Item CHUNKEN_SPAWN_ITEM = registerItem("chunken_spawn_item",
             new ChunkenSpawnEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
 
+    /*
     public static final Item FROG_KING_SPAWN_EGG = registerItem("frog_king_spawn_egg",
             new SpawnEggItem(ModEntities.FROG_KING, 0x642e8d, 0x1b7535,
-                    new FabricItemSettings().group(ItemGroup.MISC)));
+                    new FabricItemSettings().group(ItemGroup.MISC)));*/
 
-    public static final Item CHUNKEN_SPAWN_EGG = registerItem("chunken_spawn_egg",
+
+   /* public static final Item CHUNKEN_SPAWN_EGG = registerItem("chunken_spawn_egg",
             new SpawnEggItem(ModEntities.CHUNKENGL, 0x946e8d, 0x3b3535,
-                    new FabricItemSettings().group(ItemGroup.MISC)));
-
+                    new FabricItemSettings().group(ItemGroup.MISC)));*/
+/*
     public static final Item HUNTER_LEW_EGG_ITEM = registerItem("hunter_lew_egg_item",
             new HunterLewEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
 
     public static final Item HUNTER_NATE_EGG_ITEM = registerItem("hunter_nate_egg_item",
-            new HunterNateEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
+            new HunterNateEggItem(new FabricItemSettings().group(ItemGroup.MISC)));*/
 
     public static final Item HUNTER_GOLD_EGG_ITEM = registerItem("hunter_gold_egg_item",
             new HunterGoldEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
 
+    public static final Item HUNTER_FROG_KING_EGG_ITEM = registerItem("hunter_frog_king_egg_item",
+            new HunterFrogKingEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
+
+
+    /*
     public static final Item HUNTER_EGG_ITEM = registerItem("hunter_egg_item",
-            new HunterEggItem(new FabricItemSettings().group(ItemGroup.MISC)));
+            new HunterEggItem(new FabricItemSettings().group(ItemGroup.MISC)));*/
 
     public static final Item FROG_KING_ITEM = registerItem("frog_king_item",
             new FrogKingItem(new FabricItemSettings().group(ItemGroup.MISC)));

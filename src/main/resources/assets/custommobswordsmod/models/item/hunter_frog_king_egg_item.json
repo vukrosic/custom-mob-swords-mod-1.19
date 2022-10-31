@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "custommobswordsmod:item/nate_egg"
+    "layer0": "custommobswordsmod:item/gold_egg"
   }
 }

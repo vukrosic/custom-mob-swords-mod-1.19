@@ -1,3 +1,4 @@
+
 package net.vukrosic.custommobswordsmod.block;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;

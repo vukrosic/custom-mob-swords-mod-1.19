@@ -11,7 +11,8 @@
     "EntityMixin",
     "WorldMixin",
     "ServerPlayerInteractionManagerMixin",
-    "HungerManagerMixin"
+    "HungerManagerMixin",
+    "FrogBrainMixin"
   ],
   "client": [
     "ExampleMixin",

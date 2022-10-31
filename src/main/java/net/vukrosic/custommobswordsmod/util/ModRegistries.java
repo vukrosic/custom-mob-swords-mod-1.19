@@ -4,10 +4,7 @@ package net.vukrosic.custommobswordsmod.util;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.vukrosic.custommobswordsmod.command.ControlSummonerCommand;
-import net.vukrosic.custommobswordsmod.command.ResetChunkenCommand;
-import net.vukrosic.custommobswordsmod.command.RestoreDeathCommand;
-import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
+import net.vukrosic.custommobswordsmod.command.*;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import net.vukrosic.custommobswordsmod.entity.custom.*;
 import net.vukrosic.custommobswordsmod.entity.custom.butcherboy.ButcherBoyEntityGL;
@@ -30,6 +27,7 @@ public class ModRegistries {
         CommandRegistrationCallback.EVENT.register(RestoreDeathCommand::register);
         CommandRegistrationCallback.EVENT.register(ResetChunkenCommand::register);
         CommandRegistrationCallback.EVENT.register(ControlSummonerCommand::register);
+        CommandRegistrationCallback.EVENT.register(ButcherBoyCommand::register);
     }
 
     private static void registerAttributes(){

@@ -64,9 +64,6 @@ public abstract class LivingEntityMixin extends Entity implements Nameable, Enti
                 return entity instanceof LivingEntity;
             }).forEach((entity) -> {
                 entity.damage(DamageSource.MAGIC, 4);
-                if(SetHunterCommand.pray != null){
-                    SetHunterCommand.pray.sendMessage(Text.of("LivingEntityMixin tick AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"), false);
-                }
             });
         }
     }

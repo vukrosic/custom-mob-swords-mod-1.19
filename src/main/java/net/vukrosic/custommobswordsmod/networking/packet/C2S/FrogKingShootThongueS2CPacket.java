@@ -23,7 +23,6 @@ public class FrogKingShootThongueS2CPacket {
 
         Vec3d cameraPos = player.getCameraPosVec(0);
         //Vec3d cameraPos = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
-        player.sendMessage(Text.of("SERVER PACKET cameraPos: " + cameraPos), false);
         Vec3d cameraDirection = player.getRotationVec(0);
         Vec3d vec3d3 = cameraPos.add(cameraDirection.multiply(raycastDistance));
         Box box = player

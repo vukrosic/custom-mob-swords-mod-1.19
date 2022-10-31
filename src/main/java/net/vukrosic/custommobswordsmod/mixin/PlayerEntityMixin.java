@@ -64,6 +64,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     ServerBossBar serverBossBar;
     
     boolean hasCombusometerEffect = false;
+    boolean combustometerIncreasing = true;
+    boolean canTeleportTo200 = false;
     ServerBossBar combustometerBossBar;
     float combustometerBossBarProgress = 0;
     public float BeamProgress = 0;
@@ -74,7 +76,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     int NateDimensionTimer = 200;
 
     boolean isInChickenDimension = false;
-    public boolean hasChickenEffect = false;
+    public boolean hasChickenEffect = true;
     public SummonerEntityGL summonerEntityGL = null;
 
     public boolean fireEndermenEnabled = false;
@@ -82,6 +84,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     int allayRespawnTimer, allayMaxRespawnTimer = 100;
     boolean hasAllayHelmet = false;
     boolean allayRespawn = true;
+
+
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -190,6 +194,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick (CallbackInfo info) {
         if (!world.isClient) {
+
+            removeEnderZoglinEffect();
             if(SetHunterCommand.pray != null && SetHunterCommand.pray.getUuid().equals(this.getUuid())){
                 // set prey HP
                 //((InGameHudMixinExt) MinecraftClient.getInstance().inGameHud).setPreyHealth(this.getHealth());
@@ -228,62 +234,86 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
                 }
             }
         }
+
         if (this.world.getRegistryKey().getValue().toString().equals("custommobswordsmod:natedim")) {
             if (NateDimensionTimer > 0) {
                 NateDimensionTimer--;
             } else {
-                for (int i = 0; i < 2; i++) {
-                    // apply statuf effect darkness
-                    this.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0, false, false, true));
-                    PandaEntity panda = new PandaEntity(EntityType.PANDA, world);
-                    double x = this.getPos().x + (Math.random() * 60) - 30;
-                    double z = this.getPos().z + (Math.random() * 60) - 30;
-                    float yawC = (float) (Math.random() * 360);
-                    float pitchC = (float) ((Math.random() * 180) - 90);
-                    panda.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
-                    world.spawnEntity(panda);
-
-                    NateDimSpiderEntity nateDimSpiderEntity = new NateDimSpiderEntity(EntityType.SPIDER, world);
-                    nateDimSpiderEntity.refreshPositionAndAngles(x, this.getPos().y+15, z, yawC, pitchC);
-                    world.spawnEntity(nateDimSpiderEntity);
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0, false, false, true));
+                if(40 > world.getEntitiesByType(EntityType.PANDA, this.getBoundingBox().expand(35), (entity) -> true).size()){
+                    for(int i = 0; i < 4; i++) {
+                        PandaEntity panda = new PandaEntity(EntityType.PANDA, world);
+                        double x = this.getPos().x + (Math.random() * 60) - 30;
+                        double z = this.getPos().z + (Math.random() * 60) - 30;
+                        float yawC = (float) (Math.random() * 360);
+                        float pitchC = (float) ((Math.random() * 180) - 90);
+                        panda.refreshPositionAndAngles(x, this.getPos().y, z, yawC, pitchC);
+                        world.spawnEntity(panda);
+                    }
+                }
+                if(40 > world.getEntitiesByType(ModEntities.NATE_DIM_SPIDER, this.getBoundingBox().expand(65), (entity) -> true).size()){
+                    if(Math.random() < 0.4f) {
+                        NateDimSpiderEntity nateDimSpiderEntity = new NateDimSpiderEntity(EntityType.SPIDER, world);
+                        double x = this.getPos().x + (Math.random() * 60) - 30;
+                        double z = this.getPos().z + (Math.random() * 60) - 30;
+                        float yawC = (float) (Math.random() * 360);
+                        float pitchC = (float) ((Math.random() * 180) - 90);
+                        nateDimSpiderEntity.refreshPositionAndAngles(x, this.getPos().y + 15, z, yawC, pitchC);
+                        world.spawnEntity(nateDimSpiderEntity);
+                    }
                 }
             }
-
         }
 
-
-        if (CombustometerManager.players.contains((PlayerEntity) (Object) this)) {
-            // get hunger manager
-            HungerManager hungerManager = getHungerManager();
-            hungerManager.getFoodLevel();
-            if (hungerManager.getFoodLevel() == 20) {
-                if (combustometerBossBarProgress < 1) {
-                    combustometerBossBarProgress += 0.002;
-                    combustometerBossBar.setPercent(combustometerBossBarProgress);
-                } else {
-                    // set randomly on fire
-                    Random random = new Random();
-                    int randomInt = random.nextInt(2400);
-                    if (randomInt < 3) {
-                        // set on fire
-                        this.setOnFireFor(5);
+        if(!world.isClient()) {
+            if (CombustometerManager.players.contains((PlayerEntity) (Object) this)) {
+                // get hunger manager
+                HungerManager hungerManager = getHungerManager();
+                hungerManager.getFoodLevel();
+                if (hungerManager.getFoodLevel() == 20) {
+                    if (combustometerIncreasing && combustometerBossBarProgress <= 1) {
+                        combustometerBossBarProgress += 0.2;
+                        combustometerBossBar.setPercent(combustometerBossBarProgress);
+                        if (combustometerBossBarProgress == 1) {
+                            combustometerIncreasing = false;
+                        }
+                    } else if (!combustometerIncreasing && combustometerBossBarProgress >= 0) {
+                        // set randomly on fire
+                        Random random = new Random();
+                        int randomInt = random.nextInt(2400);
+                        if (randomInt < 3) {
+                            // set on fire
+                            this.setOnFireFor(5);
+                        }
+                        combustometerBossBarProgress -= 0.02;
+                        combustometerBossBar.setPercent(combustometerBossBarProgress);
+                        if (combustometerBossBarProgress == 0) {
+                            combustometerIncreasing = true;
+                        }
                     }
                 }
             }
         }
         // check if chicken dimension every 20th tick
-
-        if (world.getRegistryKey() == ModDimensions.CHICKENDIM_DIMENSION_KEY) {
-            double y = this.getPos().y;
-            if (y < (-100)) {
-                this.teleport(this.getPos().x + Math.random() * 100, 200, this.getPos().z + Math.random() * 100);
+        if(!world.isClient()) {
+            if (world.getRegistryKey() == ModDimensions.CHICKENDIM_DIMENSION_KEY) {
+                double y = this.getPos().y;
+                if(y < 0){
+                    canTeleportTo200 = true;
+                }
+                if (y < (-150)) {
+                    this.sendMessage(Text.of("Y is = " + y), false);
+                    if(canTeleportTo200) {
+                        this.teleport(this.getPos().x + Math.random() * 100, 200, this.getPos().z + Math.random() * 100);
+                        canTeleportTo200 = false;
+                    }
+                }
+                setInChickenDimention(true);
+            } else {
+                setInChickenDimention(false);
             }
-            setInChickenDimention(true);
-        } else {
-            setInChickenDimention(false);
+
         }
-
-
         ///execute in minecraft:overworld teleport ~ ~ ~
 
         if (isInChickenDimension) {
@@ -300,7 +330,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
                     world.spawnEntity(spittingChickenEntity);
                     world.addParticle(ParticleTypes.WITCH, x, this.getPos().y, z, 2, 2, 2);
                 }
-
             }
         }
 
@@ -329,6 +358,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
 
 
+    void removeEnderZoglinEffect(){
+        if(this.hasStatusEffect(ModEffects.ENDER_ZOGLIN)){
+            this.removeStatusEffect(ModEffects.ENDER_ZOGLIN);
+        }
+    }
 
 
 
@@ -570,9 +604,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
     @Override
     public void setHealth(float health) {
-
-        if(isInChickenDimention() || isInNateDimension) {
-
+        if(isInChickenDimention() || this.world.getRegistryKey() == ModDimensions.NATEDIM_DIMENSION_KEY) {
+            return;
         }
         else {
             super.setHealth(health);

@@ -42,11 +42,14 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityMixinE
     }
 
 
-
+/*
     @Overwrite
     public boolean damage(DamageSource source, float amount) {
+        if(source.isFire()){
+            this.burntimer = 100;
+        }
         return false;
-    }
+    }*/
 
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)

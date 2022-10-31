@@ -14,8 +14,10 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
@@ -71,16 +73,17 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public void tick() {
+        /*
         if(hasEggToPoop){
             poopEggTimer--;
             if(poopEggTimer <= 0){
                 hasEggToPoop = false;
                 poopEggTimer = 40;
-                // drop item
-                ItemEntity goldEggItem = this.dropItem(ModItems.HUNTER_GOLD_EGG_ITEM);
-                //gold
+                ItemEntity goldEggItem = new ItemEntity(world, this.getX(), this.getY(), this.getZ(), new ItemStack(ModItems.HUNTER_GOLD_EGG_ITEM));
+                goldEggItem.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0);
+                world.spawnEntity(goldEggItem);
             }
-        }
+        }*/
 
         if(getTarget() == null && SetHunterCommand.hunters.size() > 0){
             ArrayList<Float> distances = new ArrayList<>();
@@ -108,6 +111,9 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
+        if(target == SetHunterCommand.pray){
+            return;
+        }
         if(ChunkenPhaseManager.chunkenPhase != 3) {
             if (target != null && target instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) target;
@@ -149,6 +155,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
                 hitsToNextPhase--;
                 if(hitsToNextPhase <= 0 && ChunkenPhaseManager.chunkenPhase < 3) {
                     ServerPlayNetworking.send((ServerPlayerEntity) n, ModMessages.CHUNKEN_PHASE_INCREMENT, new PacketByteBuf(Unpooled.buffer()));
+                    ChunkenPhaseManager.chunkenPhase++;
                     hitsToNextPhase = ChunkenPhaseManager.hitsPerPhase;
                 }
             }
@@ -167,10 +174,18 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     @Override
     public boolean tryAttack(Entity target) {
+        /*
+        ChunkenRocketEntity chunkenRocketEntity = new ChunkenRocketEntity(ModEntities.CHUNKEN_ROCKET, world);
+        chunkenRocketEntity.refreshPositionAndAngles(this.getX(), this.getBodyY(0.8F),
+                this.getZ(), 0, 0);
+        chunkenRocketEntity.setVelocity(this, this.getPitch(), this.getYaw(), 0.0F,
+                0.25F * 3.0F, 0);
+        chunkenRocketEntity.setDamage(7);
+        chunkenRocketEntity.hasNoGravity();
+        world.spawnEntity(chunkenRocketEntity);*/
         if(target != null && !(target instanceof PlayerEntity)) {
             return false;
         }
-
         if (ChunkenPhaseManager.chunkenPhase == 0 || ChunkenPhaseManager.chunkenPhase == 1) {
             if (distanceTo(target) > 2.5) {
                 return false;
@@ -217,17 +232,14 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     void ShootRocket(){
         if(this.getTarget() != null) {
-            ChunkenRocketEntity abstractarrowentity = new ChunkenRocketEntity(ModEntities.CHUNKEN_ROCKET, world);
-            // get direction towards target
-            /*Vec3d direction = this.getTarget().getPos().subtract(this.getPos()).normalize();
-            abstractarrowentity.setVelocity(direction.multiply(2));*/
-            abstractarrowentity.setVelocity(this, this.getPitch(), this.getYaw(), 0.0F,
-                0.25F * 3.0F, 0);
-            abstractarrowentity.refreshPositionAndAngles(this.getX(), this.getBodyY(0.8F),
+            ChunkenRocketEntity chunkenRocketEntity = new ChunkenRocketEntity(ModEntities.CHUNKEN_ROCKET, world);
+            chunkenRocketEntity.refreshPositionAndAngles(this.getX(), this.getBodyY(0.8F),
                     this.getZ(), 0, 0);
-            abstractarrowentity.setDamage(7);
-            abstractarrowentity.hasNoGravity();
-            world.spawnEntity(abstractarrowentity);
+            chunkenRocketEntity.setVelocity(this, this.getPitch(), this.getYaw(), 0.0F,
+                    0.25F * 3.0F, 0);
+            chunkenRocketEntity.setDamage(7);
+            chunkenRocketEntity.hasNoGravity();
+            world.spawnEntity(chunkenRocketEntity);
         }
     }
 
@@ -235,7 +247,7 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
 
     void eatHunter(Entity player){
         ChunkenPhaseManager.eatenPlayerPos = player.getPos();
-        player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/execute in custommobswordsmod:chickendim run teleport ~ 160 ~");
+        player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/execute in custommobswordsmod:chickendim run teleport ~ 260 ~");
         ChunkenPhaseManager.eatenPlayer = (PlayerEntity) player;
         ((PlayerEntityExt)player).setInChickenDimention(true);
         ((PlayerEntityExt)player).setChickenEffect(true);
@@ -243,9 +255,12 @@ public class ChunkenEntityGL extends HostileEntity implements IAnimatable {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeBoolean(true);
         ServerPlayNetworking.send((ServerPlayerEntity) player, ModMessages.CHICKEN_EFFECT_POST_ID, buf);
-
-        hasEggToPoop = true;
-        //player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/gamemode adventure");
+        int slot = SetHunterCommand.pray.getInventory().getEmptySlot();
+        if(SetHunterCommand.pray != null) {
+            SetHunterCommand.pray.getInventory().setStack(slot, ModItems.HUNTER_GOLD_EGG_ITEM.getDefaultStack());
+        }
+        // hasEggToPoop = true;
+        // player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), "/gamemode adventure");
     }
 
 

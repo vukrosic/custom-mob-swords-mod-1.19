@@ -124,6 +124,13 @@ public class CorruptedAllayVexEntityGL extends VexEntity implements IAnimatable 
             super.start();
         }
     }
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if(target == SetHunterCommand.pray){
+            return;
+        }
+        super.setTarget(target);
+    }
 
     /*==================*/
 

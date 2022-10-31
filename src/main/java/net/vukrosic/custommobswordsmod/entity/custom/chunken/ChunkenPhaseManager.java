@@ -3,13 +3,20 @@ package net.vukrosic.custommobswordsmod.entity.custom.chunken;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.vukrosic.custommobswordsmod.CustomMobSwordsMod;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
+import net.vukrosic.custommobswordsmod.item.ModItems;
 
 import java.util.ArrayList;
 
@@ -62,8 +69,8 @@ public class ChunkenPhaseManager {
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_1.png"));
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_2.png"));
         textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_3.png"));
-        textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_gold.png"));
-        textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_gold.png"));
+        textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_nate.png"));
+        textures.add(new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_nate.png"));
 
 
         idleAnimation.add("animation.geometry.chicken.phase1_idle");
@@ -118,4 +125,12 @@ public class ChunkenPhaseManager {
             return textures.set(4, new Identifier(CustomMobSwordsMod.MOD_ID, "textures/entity/chicken_robot_phase_5_nate.png"));
         }
     }
+
+/*
+    public static void poopEgg(Vec3d pos, World world){
+        // spawn item
+        ItemEntity itemEntity = new ItemEntity(world, pos.x, pos.y, pos.z, new ItemStack(ModItems.HUNTER_GOLD_EGG_ITEM));
+        itemEntity.refreshPositionAndAngles(pos.x, pos.y, pos.z, 0.0F, 0.0F);
+        world.spawnEntity(itemEntity);
+    }*/
 }

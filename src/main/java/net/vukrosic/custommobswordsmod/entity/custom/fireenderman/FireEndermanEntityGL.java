@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -89,6 +90,13 @@ public class FireEndermanEntityGL extends EndermanEntity implements IAnimatable 
 
 
 
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if(target == SetHunterCommand.pray){
+            return;
+        }
+        super.setTarget(target);
+    }
 
 
     @Override

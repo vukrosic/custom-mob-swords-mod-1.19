@@ -30,6 +30,8 @@ import net.vukrosic.custommobswordsmod.util.FireInfectedPlayers;
 import net.vukrosic.custommobswordsmod.util.custom.HandledScreenExt;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 
 public class FireZombieEntity extends ZombieEntity {
 
@@ -66,6 +68,7 @@ public class FireZombieEntity extends ZombieEntity {
     @Override
     public void tick() {
         setTarget(world.getClosestPlayer(this, 150));
+        aggroClosestHunter();
         super.tick();
     }
 
@@ -75,6 +78,24 @@ public class FireZombieEntity extends ZombieEntity {
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.5D);
     }
 
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if(target == SetHunterCommand.pray){
+            return;
+        }
+        super.setTarget(target);
+    }
 
-
+    void aggroClosestHunter(){
+        if(getTarget() == null && SetHunterCommand.hunters.size() > 0){
+            ArrayList<Float> distances = new ArrayList<>();
+            for(PlayerEntity hunter : SetHunterCommand.hunters){
+                float distance = this.distanceTo(hunter);
+                distances.add(distance);
+            }
+            // get index of closest hunter
+            int index = distances.indexOf(distances.stream().min(Float::compare).get());
+            setTarget(SetHunterCommand.hunters.get(index));
+        }
+    }
 }

@@ -24,7 +24,7 @@ public class NateDimSpiderEntity extends SpiderEntity {
     public static DefaultAttributeContainer.Builder setAttributes(){
 
         return SpiderEntity.createSpiderAttributes().
-                add(EntityAttributes.GENERIC_MAX_HEALTH, 25.0D).
+                add(EntityAttributes.GENERIC_MAX_HEALTH, 55.0D).
                 add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0D);
     }
 

@@ -141,7 +141,7 @@ public abstract class CompassAnglePredicateProviderMixin implements UnclampedMod
             //MinecraftClient.getInstance().player.sendMessage(Text.of("CompassAnglePredicateProviderMixin getAngleTo pos OVERWORLD: " + entity.getPos().toString()), false);
             return Math.atan2(Vec3d.ofCenter(pos1).getZ() - entity.getZ(), Vec3d.ofCenter(pos1).getX() - entity.getX()) / 6.2831854820251465;
         }
-        else if (MinecraftClient.getInstance().world.getRegistryKey() == World.NETHER && SetPreyNetherPositionS2CPacket.getPrayNetherPos() != new BlockPos(0, 0, 0)) {
+        else if (MinecraftClient.getInstance().world.getRegistryKey() == World.NETHER && !Objects.equals(SetPreyNetherPositionS2CPacket.getPrayNetherPos(), new BlockPos(0, 0, 0))) {
             BlockPos pos1 = SetPreyNetherPositionS2CPacket.getPrayNetherPos();
             //MinecraftClient.getInstance().player.sendMessage(Text.of("CompassAnglePredicateProviderMixin getAngleTo pos NETHER: " + entity.getPos().toString()), false);
             return Math.atan2(Vec3d.ofCenter(pos1).getZ() - entity.getZ(), Vec3d.ofCenter(pos1).getX() - entity.getX()) / 6.2831854820251465;

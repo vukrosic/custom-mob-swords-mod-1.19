@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.*;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -18,9 +19,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.vukrosic.custommobswordsmod.command.SetHunterCommand;
 import net.vukrosic.custommobswordsmod.entity.ModEntities;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class EnderZoglinEntity extends ZombifiedPiglinEntity {
@@ -63,6 +66,8 @@ public class EnderZoglinEntity extends ZombifiedPiglinEntity {
 
     @Override
     public void tick() {
+        if(getTarget() == null)
+            aggroClosestHunter();
         double randomNumber = Math.random();
         if(super.getTarget() != null) {
             if (randomNumber > 0.80) {
@@ -84,6 +89,19 @@ public class EnderZoglinEntity extends ZombifiedPiglinEntity {
     }
 
 
+    void aggroClosestHunter(){
+        if(getTarget() == null && SetHunterCommand.hunters.size() > 0){
+            ArrayList<Float> distances = new ArrayList<>();
+            for(PlayerEntity hunter : SetHunterCommand.hunters){
+                float distance = this.distanceTo(hunter);
+                distances.add(distance);
+            }
+            // get index of closest hunter
+            int index = distances.indexOf(distances.stream().min(Float::compare).get());
+            setTarget(SetHunterCommand.hunters.get(index));
+        }
+    }
+
 /*
     @Override
     public void setHealth(float health) {
@@ -97,6 +115,9 @@ public class EnderZoglinEntity extends ZombifiedPiglinEntity {
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
+        if(target == SetHunterCommand.pray){
+            return;
+        }
         super.setTarget(target);
     }
 

@@ -93,6 +93,7 @@ public class CarbonPoisoningEffectManager {
                 warden.setPosition(player.getX() + x, player.getY(), player.getZ() + z);
                 blinkingWardenEntities.add(warden);
                 // spawn the warden
+                warden.setSilent(true);
                 player.world.spawnEntity(warden);
             }
         }

@@ -79,6 +79,8 @@ public class ModEntities {
             FabricEntityTypeBuilder.create(SpawnGroup.MISC, HunterEggEntity::new)
                     .dimensions(EntityDimensions.fixed(0.5F, 0.5F))
                     .build());*/
+
+
     public static final EntityType<ChunkenRocketEntity> CHUNKEN_ROCKET = Registry.register(
         Registry.ENTITY_TYPE, new Identifier(CustomMobSwordsMod.MOD_ID, "chunken_rocket"),
         FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ChunkenRocketEntity::new)

@@ -33,6 +33,12 @@
   "item.custommobswordsmod.frog_king_item": "Frog King Item",
   "item.custommobswordsmod.absorption_shield_item": "Absorption Shield Item",
   "item.custommobswordsmod.hunter_egg_item": "Hunter Egg",
+  "item.custommobswordsmod.frog_king_spawn_item": "Frog King Egg",
+  "item.custommobswordsmod.hunter_gold_egg_item": "Hunter Egg",
+  "item.custommobswordsmod.butcher_cow_spawn_spawn_egg": "Butcher Cow Spawn Egg",
+  "item.custommobswordsmod.fire_zombie_flint_and_steel": "Fire Zombie Flint and Steel",
+  "item.custommobswordsmod.chunken_spawn_item": "Chunken Egg",
+  "item.custommobswordsmod.hunter_frog_king_egg_item": "Frog King Hunter Egg",
 
 
 
@@ -46,14 +52,20 @@
   "entity.custommobswordsmod.chunken": "Chunken",
   "entity.custommobswordsmod.frog_king": "Frog King",
   "entity.custommobswordsmod.shielding_shulker": "Shielding Shulker",
+  "entity.custommobswordsmod.butcher_boy": "Butcher Boy",
 
   "effect.custommobswordsmod.carbonpoisoning": "Be quiet, she will hear you",
   "effect.custommobswordsmod.chicken": "C H I C C",
+  "effect.custommobswordsmod.fire_enderman": "Fire Enderman",
+  "effect.custommobswordsmod.ender_zoglin": "Ender Zoglin",
 
   "key.category.custommobswordsmod.custommobs": "Custom Mobs Keys",
   "key.custommobswordsmod.shoot_tongue": "Shoot Tongue Key",
 
   "item.minecraft.potion.effect.fire_enderman_potion": "Fire Enderman Potion",
   "item.minecraft.splash_potion.effect.fire_enderman_potion": "Splash Potion of Fire Enderman",
-  "item.minecraft.lingering_potion.effect.fire_enderman_potion": "Lingering Potion of Fire Enderman"
+  "item.minecraft.lingering_potion.effect.fire_enderman_potion": "Lingering Potion of Fire Enderman",
+  "item.minecraft.potion.effect.ender_zoglin_potion": "Ender Zoglin Potion",
+  "item.minecraft.splash_potion.effect.ender_zoglin_potion": "Splash Potion of Ender Zoglin",
+  "item.minecraft.lingering_potion.effect.ender_zoglin_potion": "Lingering Potion of Ender Zoglin"
 }
